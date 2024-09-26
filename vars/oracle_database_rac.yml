@@ -1,0 +1,169 @@
+# %%%%%%%%%%%%%%%%%%%%
+# Oracle Database 19c RAC / 变量
+# %%%%%%%%%%%%%%%%%%%%
+
+# ===================== Directory / 目录
+
+# --- 安装相关
+dir__oracle_upload_base: "{{ dir__ansible_client__files }}/oracle"
+
+dir__oracle_upload_yum_repofile: "{{ dir__oracle_upload_base }}/yum_repofile"
+dir__oracle_upload_yum_repodata: "{{ dir__oracle_upload_base }}/yum_repodata"
+dir__oracle_upload_rpm: "{{ dir__oracle_upload_base }}/rpm"
+
+dir__oracle_upload_oracle_installmedia: "{{ dir__oracle_upload_base }}/oracle_installmedia"
+dir__oracle_upload_oracle_installmedia_patch: "{{ dir__oracle_upload_base }}/oracle_installmedia_patch"
+
+dir__oracle_upload_oracle_installmedia_patch_6880880_unziped: "{{ dir__oracle_upload_oracle_installmedia_patch }}/OPatch"
+dir__oracle_upload_oracle_installmedia_patch_34518661_unziped: "{{ dir__oracle_upload_oracle_installmedia_patch }}/34518661"
+
+dir__oracle_upload_python_pexpect_unziped: "{{ dir__oracle_upload_base }}/pexpect"
+
+# --- 运行相关
+dir__oracle_base_dir__mountpoint: "/u01"
+dir__oracle_base_dir: "{{ dir__oracle_base_dir__mountpoint }}/app"
+
+dir__oracle_inventory: "{{ dir__oracle_base_dir }}/oraInventory"
+
+dir__oracle_base: "{{ dir__oracle_base_dir }}/oracle"
+dir__oracle_home: "{{ dir__oracle_base }}/product/19"
+
+dir__grid_base: "{{ dir__oracle_base_dir }}/grid_base"
+dir__grid_home: "{{ dir__oracle_base }}/19/grid_home"
+
+# %%%%%%%%%%%%%%%%%%%%
+# [os-linux-rhel] 变量
+# %%%%%%%%%%%%%%%%%%%%
+
+# ===================== Task Switch
+
+# OS User and Group
+os_user_and_group_enabled: yes
+
+# OS Directory
+os_directory_enabled: yes
+
+# ===================== [os_user_and_group.yml]
+
+os_user_and_group__group:
+  - name: "oinstall"
+    id: 4001
+  - name: "dba"
+    id: 4002
+  - name: "asmdba"
+    id: 4003
+  - name: "asmadmin"
+    id: 4004
+
+os_user_and_group__user:
+  - username: "oracle"
+    password: "oracle"
+    comment: "Oracle Database User"
+    id: 4005
+    shell: "/bin/bash"
+    dir_home: "/home/oracle"
+    group: "oinstall"
+    groups:
+      - "dba"
+      - "asmdba"
+  - username: "grid"
+    password: "oracle"
+    comment: "Grid Infrastructure User"
+    id: 4006
+    shell: "/bin/bash"
+    dir_home: "/home/oracle"
+    group: "oinstall"
+    groups:
+      - "dba"
+      - "asmdba"
+      - "asmadmin"
+
+# os_user_and_group__environment:
+#   # 数据库用户【oracle】
+#   - user: 'oracle'
+#     key: 'ORACLE_SID'
+#     value: '{{ var__oracle_sid }}{{ node_id }}'
+#   - user: 'oracle'
+#     key: 'ORACLE_BASE'
+#     value: '{{ dir__oracle_base }}'
+#   - user: 'oracle'
+#     key: 'ORACLE_HOME'
+#     value: '{{ dir__oracle_home }}'
+#   - user: 'oracle'
+#     key: 'PATH'
+#     value: '$ORACLE_HOME/bin:$PATH:/sbin'
+#   - user: 'oracle'
+#     key: 'LD_LIBRARY_PATH'
+#     value: '$ORACLE_HOME/lib:$LD_LIBRARY_PATH'
+#   # 集群用户【grid】
+#   - user: 'grid'
+#     key: 'ORACLE_SID'
+#     value: '+ASM{{ node_id }}'
+#   - user: 'grid'
+#     key: 'ORACLE_BASE'
+#     value: '{{ dir__grid_base }}'
+#   - user: 'grid'
+#     key: 'ORACLE_HOME'
+#     value: '{{ dir__grid_home }}'
+#   - user: 'grid'
+#     key: 'PATH'
+#     value: '$ORACLE_HOME/bin:$PATH:/sbin'
+#   - user: 'grid'
+#     key: 'LD_LIBRARY_PATH'
+#     value: '$ORACLE_HOME/lib:$LD_LIBRARY_PATH'
+
+# ===================== [os_directory.yml]
+
+os_directory__directory:
+  - path: "{{ dir__oracle_upload_base }}"
+    owner: "root"
+    group: "root"
+    mode: "0777"
+  - path: "{{ dir__oracle_upload_yum_repofile }}"
+    owner: "root"
+    group: "root"
+    mode: "0777"
+  - path: "{{ dir__oracle_upload_yum_repodata }}"
+    owner: "root"
+    group: "root"
+    mode: "0777"
+  - path: "{{ dir__oracle_upload_rpm }}"
+    owner: "root"
+    group: "root"
+    mode: "0777"
+  - path: "{{ dir__oracle_upload_oracle_installmedia }}"
+    owner: "root"
+    group: "root"
+    mode: "0777"
+  - path: "{{ dir__oracle_upload_oracle_installmedia_patch }}"
+    owner: "oracle"
+    group: "oinstall"
+    mode: "0777"
+  - path: "{{ dir__oracle_base_dir__mountpoint }}"
+    owner: "oracle"
+    group: "oinstall"
+    mode: "0777"
+  - path: "{{ dir__oracle_base_dir }}"
+    owner: "oracle"
+    group: "oinstall"
+    mode: "0777"
+  - path: "{{ dir__oracle_inventory }}"
+    owner: "grid"
+    group: "oinstall"
+    mode: "0777"
+  - path: "{{ dir__oracle_base }}"
+    owner: "oracle"
+    group: "oinstall"
+    mode: "0755"
+  - path: "{{ dir__oracle_home }}"
+    owner: "oracle"
+    group: "oinstall"
+    mode: "0755"
+  - path: "{{ dir__grid_base }}"
+    owner: "grid"
+    group: "oinstall"
+    mode: "0755"
+  - path: "{{ dir__grid_home }}"
+    owner: "grid"
+    group: "oinstall"
+    mode: "0755"

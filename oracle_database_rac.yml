@@ -1,0 +1,11 @@
+- name: "[Oracle DB 19c RAC] Operating System / Linux / RHEL"
+  hosts:
+    - db-oracle-rac
+  roles:
+    - { role: os-linux-rhel }
+  vars_files:
+    - vars/oracle_database_rac.yml
+  gather_facts: yes
+  become: yes
+  become_user: root
+  become_method: sudo

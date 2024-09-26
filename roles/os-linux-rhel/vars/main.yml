@@ -1,0 +1,93 @@
+# %%%%%%%%%%%%%%%%%%%%
+# [os-linux-rhel] 变量文件
+# %%%%%%%%%%%%%%%%%%%%
+# - PS: 
+#   在每个角色中，不同的任务的启用与否，不再通过代码注释，而是通过 enabled 变量去控制
+#   在每个角色的变量文件中，定义变量，并设置默认值。
+#   在具体脚本拼接角色去实现特定的流程与功能的时候，再最终定义不同场景中的变量的值
+
+
+# ===================== Task Switch
+
+# OS User and Group
+# os_user_and_group_enabled: yes
+
+# OS Directory
+os_directory_enabled: yes
+
+# ===================== [os_user_and_group.yml]
+
+# os_user_and_group__group:
+#   - name: "oinstall"
+#     id: 4001
+#   - name: "dba"
+#     id: 4002
+#   - name: "asmdba"
+#     id: 4003
+#   - name: "asmadmin"
+#     id: 4004
+
+# os_user_and_group__user:
+#   - username: "oracle"
+#     password: "oracle"
+#     comment: "Oracle Database User"
+#     id: 4005
+#     shell: "/bin/bash"
+#     dir_home: "/home/oracle"
+#     group: "oinstall"
+#     groups:
+#       - "dba"
+#       - "asmdba"
+#   - username: "grid"
+#     password: "oracle"
+#     comment: "Grid Infrastructure User"
+#     id: 4005
+#     shell: "/bin/bash"
+#     dir_home: "/home/oracle"
+#     group: "oinstall"
+#     groups:
+#       - "dba"
+#       - "asmdba"
+#       - "asmadmin"
+
+# os_user_and_group__environment:
+#   # 数据库用户【oracle】
+#   - user: 'oracle'
+#     key: 'ORACLE_SID'
+#     value: '{{ var__oracle_sid }}{{ node_id }}'
+#   - user: 'oracle'
+#     key: 'ORACLE_BASE'
+#     value: '{{ dir__oracle_base }}'
+#   - user: 'oracle'
+#     key: 'ORACLE_HOME'
+#     value: '{{ dir__oracle_home }}'
+#   - user: 'oracle'
+#     key: 'PATH'
+#     value: '$ORACLE_HOME/bin:$PATH:/sbin'
+#   - user: 'oracle'
+#     key: 'LD_LIBRARY_PATH'
+#     value: '$ORACLE_HOME/lib:$LD_LIBRARY_PATH'
+#   # 集群用户【grid】
+#   - user: 'grid'
+#     key: 'ORACLE_SID'
+#     value: '+ASM{{ node_id }}'
+#   - user: 'grid'
+#     key: 'ORACLE_BASE'
+#     value: '{{ dir__grid_base }}'
+#   - user: 'grid'
+#     key: 'ORACLE_HOME'
+#     value: '{{ dir__grid_home }}'
+#   - user: 'grid'
+#     key: 'PATH'
+#     value: '$ORACLE_HOME/bin:$PATH:/sbin'
+#   - user: 'grid'
+#     key: 'LD_LIBRARY_PATH'
+#     value: '$ORACLE_HOME/lib:$LD_LIBRARY_PATH'
+
+# ===================== [os_directory.yml]
+
+# os_directory__directory:
+#   - path: ""
+#     owner: ""
+#     group: ""
+#     mode: ""

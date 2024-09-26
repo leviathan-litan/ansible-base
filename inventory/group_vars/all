@@ -1,0 +1,13 @@
+# ===================== User Auth
+# ansible_host: "127.0.0.1"
+ansible_port: "22"
+ansible_user: "root"
+ansible_ssh_pass: "oracle"
+ansible_become_password: "oracle"
+
+# ===================== [ansible-base] Default
+# where [ansible-server] stores files which is wait for push to [ansible-client]
+dir__ansible_server__files: "/software"
+
+# where [ansible-client] stores files which [ansible-server] uploaded
+dir__ansible_client__files: "/upload"

@@ -1,0 +1,36 @@
+- name: "[os-linux-rhel] create user group"
+  group:
+    state: present
+    name: "{{ item.name }}"
+    gid: "{{ item.id }}"
+  with_items: 
+    - "{{ os_user_and_group__group }}"
+
+- name: "[os-linux-rhel] create user"
+  user:
+    state: present
+    append: yes
+    create_home: yes
+    home: "{{ item.dir_home }}"
+    shell: "{{ item.shell }}"
+    comment: "{{ item.comment }}"
+    name: "{{ item.username }}"
+    password: "{{ item.password | password_hash('sha512') }}"
+    uid: "{{ item.id }}"
+    group: "{{ item.group }}"
+    groups: "{{ item.groups }}"
+  with_items: 
+    - "{{ os_user_and_group__user }}"
+
+# - name: "[os-linux-rhel] modify user password / manual"
+#   shell: "echo {{ item.password }} | password --stdin {{ item.username }}"
+#   with_items: 
+#     - "{{ os_user_and_group__user }}"
+
+# - name: "[os-linux-rhel] modify user enviroment variables"
+#   lineinfile:
+#     backup: yes
+#     path: "/home/{{ item.user }}/.bash_profile"
+#     line: "export {{ item.key }}={{ item.value }}"
+#   with_items:
+#     - "{{ os_user_and_group__environment }}"

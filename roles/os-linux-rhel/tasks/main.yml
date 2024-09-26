@@ -1,0 +1,13 @@
+# %%%%%%%%%%%%%%%%%%%%
+# [os-linux-rhel] Tasks - main.yml
+# %%%%%%%%%%%%%%%%%%%%
+
+# OS User and Group
+- import_tasks: os_user_and_group.yml
+  when:
+    - os_user_and_group_enabled
+
+# OS Directory
+- import_tasks: os_directory.yml
+  when:
+    - os_directory_enabled
