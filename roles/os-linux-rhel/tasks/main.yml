@@ -31,3 +31,33 @@
 - import_tasks: os_ssh_connectivity.yml
   when:
     - os_ssh_connectivity_enabled
+
+# OS YUM
+- import_tasks: os_yum.yml
+  when:
+    - os_yum_enabled
+
+# OS Linux Service
+- import_tasks: os_service.yml
+  when:
+    - os_service_enabled
+
+# OS Linux SELinux
+- import_tasks: os_selinux.yml
+  when:
+    - os_selinux_enabled
+
+# OS Linux Time
+- import_tasks: os_time.yml
+  when:
+    - os_time_enabled
+
+# OS Grub
+- import_tasks: os_grub.yml
+  when:
+    - os_grub_enabled
+
+# OS Linux Kernerl Parameters
+- import_tasks: os_kernel_parameters.yml
+  when:
+    - os_kernel_parameters_enabled

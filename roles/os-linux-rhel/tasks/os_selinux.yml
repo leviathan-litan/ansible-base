@@ -1,0 +1,20 @@
+- name: "[os_selinux.yml] config file / disabled"
+  lineinfile:
+    backup: yes
+    backrefs: no
+    dest: "/etc/selinux/config"
+    regexp: "^SELINUX="
+    line: "SELINUX=disabled"
+
+- name: "[os_selinux.yml] template setenforce"
+  shell: |
+    setenforce 0
+
+- name: "[os_selinux.yml] status / check"
+  shell: |
+    sestatus
+  register: selinux_status
+
+- name: "[os_selinux.yml] status / display"
+  debug:
+    msg: "{{ selinux_status.stdout_lines }}"

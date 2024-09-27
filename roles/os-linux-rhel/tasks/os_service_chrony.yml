@@ -1,0 +1,24 @@
+# 仅作为 NTP服务的客户端
+
+- name: "[os_service_chrony.yml] install chrony"
+  yum:
+    disable_gpg_check: yes
+    state: present
+    name: chrony
+
+- name: "[os_service_chrony.yml] config chrony"
+  template:
+    backup: yes
+    owner: root
+    group: root
+    mode: 0644
+    src: "chrony/chrony.conf.j2"
+    dest: "/etc/chrony.conf"
+
+- name: "[os_service_chrony.yml] chrony / restart and enabled"
+  systemd:
+    name: chronyd
+    state: restarted
+    enabled: yes
+
+# 一键部署 NTP服务的服务端与客户端

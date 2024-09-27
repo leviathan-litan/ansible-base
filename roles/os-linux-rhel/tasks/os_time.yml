@@ -1,0 +1,8 @@
+- name: "[os_time.yml] set-timezone"
+  shell: |
+    timedatectl set-timezone {{ os_time__timezone }}
+
+- name: "[os_time.yml] NTP / Chrony"
+  include_tasks: os_service_chrony.yml
+  when:
+    - os_time__ntp_enabled

@@ -1,0 +1,23 @@
+- name: "[os_grub.yml] modify config file /etc/default/grub"
+  replace:
+    backup: yes
+    path: "/etc/default/grub"
+    regexp: '(\s+)quiet"(\s+.*)?$'
+    replace: '\1quiet transparent_hugepage=never numa=off"\2'
+
+- name: "[os_grub.yml] grub / check"
+  shell: "df -h | grep -c /boot/efi"
+  register: linux_command_efi_check
+  ignore_errors: yes
+
+- name: "[os_grub.yml] grub / check / display"
+  debug:
+    msg: "{{ linux_command_efi_check }}"
+
+- name: "[os_grub.yml] grub / grub2-mkconfig - grub.cfg"
+  shell: "grub2-mkconfig -o /boot/grub2/grub.cfg"
+  when: linux_command_efi_check.stdout == "0"
+
+- name: "[os_grub.yml] grub / grub2-mkconfig - grub2-efi.cfg"
+  shell: "grub2-mkconfig -o /etc/grub2-efi.cfg"
+  when: linux_command_efi_check.stdout != "0"

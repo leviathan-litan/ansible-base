@@ -1,0 +1,68 @@
+# ===================== RPMs
+
+- name: "[os_yum.yml] RPMs / upload"
+  copy:
+    backup: yes
+    force: yes
+    owner: root
+    group: root
+    mode: 0755
+    src: "{{ item.file }}"
+    dest: "{{ dir__oracle_upload_rpm }}/{{ item.name }}"
+  with_items:
+   - "{{ os_yum__rpm_list }}"
+
+- name: "[os_yum.yml] RPMs / install"
+  shell: |
+    rpm -ivh {{ dir__oracle_upload_rpm }}/{{ item.name }}
+  with_items: 
+   - "{{ os_yum__rpm_list }}"
+  ignore_errors: yes
+
+# ===================== YUM
+
+- name: "[os_yum.yml] yum.conf / keepcache enable"
+  lineinfile:
+    backup: yes
+    backrefs: no
+    dest: /etc/yum.conf
+    regexp: '^keepcache'
+    line: 'keepcache=1'
+
+# - name: "[os_yum.yml] YUM / repodata / upload"
+#   unarchive:
+#     owner: root
+#     group: root
+#     mode: 0755
+#     src: "yum_repodata/yum.zip"
+#     dest: "{{ dir__oracle_upload_yum_repodata }}"
+
+# - name: "[os_yum.yml] YUM / repodata / createrepo"
+#   shell: |
+#     createrepo {{ dir__oracle_upload_yum_repodata }}
+
+- name: "[os_yum.yml] YUM / repofile / copy"
+  shell: |
+    cp /etc/yum.repos.d/*.repo {{ dir__oracle_upload_yum_repofile }}
+  ignore_errors: yes
+
+- name: "[os_yum.yml] YUM / repofile / upload"
+  template:
+    backup: yes
+    owner: root
+    group: root
+    mode: 0755
+    src: "{{ item.file }}"
+    dest: "/etc/yum.repos.d/{{ item.name }}"
+  with_items: 
+   - "{{ os_yum__repofile_list }}"
+
+- name: "[os_yum.yml] YUM / makecache"
+  shell: |
+    yum makecache
+
+- name: "[os_yum.yml] YUM / install"
+  yum:
+    disable_gpg_check: yes
+    state: present
+    name: "{{ os_yum__install_list }}"

@@ -1,0 +1,62 @@
+# --- shmmax
+- name: "动态计算 / 内核参数【shmmax】 - 获取"
+  shell: "echo \"$(grep -i memtotal /proc/meminfo | awk '{print $2}') * 1024/2\" | bc"
+  register: linux_command_kernel_param__shmmax
+
+- name: "动态计算 / 内核参数【shmmax】 - 展示"
+  debug:
+    msg: "{{ linux_command_kernel_param__shmmax.stdout }}"
+
+# --- shmall
+- name: "动态计算 / 内核参数【shmall】 - 获取"
+  shell: "echo \"{{ linux_command_kernel_param__shmmax.stdout }} /1024/4\" | bc"
+  register: linux_command_kernel_param__shmall
+
+- name: "动态计算 / 内核参数【shmall】 - 展示"
+  debug:
+    msg: "{{ linux_command_kernel_param__shmall.stdout }}"
+
+# --- hugepages
+- name: "动态计算 / 内核参数【hugepages】 - 获取"
+  shell: "echo \"{{ linux_command_kernel_param__shmmax.stdout }} /1024/1024/2\" | bc"
+  register: linux_command_kernel_param__hugepages
+
+- name: "动态计算 / 内核参数【hugepages】 - 展示"
+  debug:
+    msg: "{{ linux_command_kernel_param__hugepages.stdout }}"
+
+# --- memlock
+- name: "动态计算 / 内核参数【memlock】 - 获取"
+  shell: "echo \"{{ linux_command_kernel_param__shmmax.stdout }} /1024\" | bc"
+  register: linux_command_kernel_param__memlock
+
+- name: "动态计算 / 内核参数【memlock】 - 展示"
+  debug:
+    msg: "{{ linux_command_kernel_param__memlock.stdout }}"
+
+# /etc/security/limits.conf
+- name: "/etc/security/limits.conf"
+  pam_limits:
+    backup: yes
+    dest: "{{ item.dest }}"
+    domain: "{{ item.domain }}"
+    limit_type: "{{ item.limit_type }}"
+    limit_item: "{{ item.limit_item }}"
+    value: "{{ item.value }}"
+  with_items: "{{ list__os_limits }}"
+
+# /etc/sysctl.conf
+- name: "/etc/sysctl.conf"
+  sysctl:
+    state: present
+    reload: yes
+    name: "{{ item.key }}"
+    value: "{{ item.value }}"
+  with_dict: 
+    - "{{ list__os_sysctl }}"
+
+- name: "sysctl -p"
+  shell: "sysctl -p"
+
+- name: '/etc/pam.d/login'
+  shell: "echo 'session required pam_limits.so\nsession required /lib64/security/pam_limits.so' >> /etc/pam.d/login"
