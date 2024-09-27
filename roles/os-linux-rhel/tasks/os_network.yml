@@ -1,0 +1,23 @@
+- name: "[os_network.yml] /etc/sysconfig/network Backup and Modify"
+  lineinfile:
+    path: /etc/sysconfig/network
+    backup: yes
+    insertafter: EOF
+    line: "NOZEROCONF=yes"
+
+- name: "[os_network.yml] display"
+  debug:
+    msg: "{{ os_network__network_interfaces | json_query('[?category!=`public`]') | list }}"
+
+- name: "[os_network.yml] linux system kernel net.ipv4.conf.xxx.rp_filter"
+  sysctl:
+    state: present
+    reload: yes
+    name: "net.ipv4.conf.{{ item.nic_name }}.rp_filter"
+    value: "2"
+  with_items:
+    - "{{ os_network__network_interfaces | json_query('[?category!=`public`]') | list }}"
+
+# - name: "[os_network.yml] 网卡配置 / 普通"
+
+# - name: "[os_network.yml] 网卡配置 / 双网卡绑定"

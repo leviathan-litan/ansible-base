@@ -1,0 +1,11 @@
+- name: "[python.yml] upload install media / pexpect"
+  unarchive:
+    owner: "root"
+    group: "root"
+    mode: "0777"
+    src: "python/pexpect-3.3.tar.gz"
+    dest: "{{ dir__oracle_upload_python_pexpect_unziped }}"
+
+- name: "[python.yml] install pexpect"
+  shell: |
+    cd {{ dir__oracle_upload_python_pexpect_unziped}}/pexpect-3.3 && python3 setup.py install

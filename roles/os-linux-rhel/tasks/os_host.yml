@@ -1,0 +1,42 @@
+- name: "[os_host.yml] set-hostname / node1"
+  shell: |
+    hostnamectl set-hostname {{ node1_hostname_public }}
+  when:
+    - node_id == 1
+
+- name: "[os_host.yml] set-hostname / node2"
+  shell: |
+    hostnamectl set-hostname {{ node2_hostname_public }}
+  when:
+    - node_id == 2
+
+- name: "[os_host.yml] Backup /etc/hosts, then add a empty line"
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    insertafter: EOF
+    backup: true
+    line: ' '
+
+- name: "[os_host.yml] Add annotation to /etc/hosts"
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    insertafter: EOF
+    line: "{{ os_host__comment }}"
+
+# SIMPLE
+# - name: "[os_host.yml] Add a sequential series of [{{ deploy_hosts }}] hosts to /etc/hosts"
+#   ansible.builtin.lineinfile:
+#     path: /etc/hosts
+#     insertafter: EOF
+#     line: "{{ hostvars[item]['ansible_host'] }}    {{ item }}"
+#   with_items:
+#     - "{{ groups[deploy_hosts] }}"
+
+# COMPLEX
+- name: "[os_host.yml] Add records to /etc/hosts"
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    insertafter: EOF
+    line: "{{ item.ipaddr }}    {{ item.hostname }}"
+  with_items: 
+    - "{{ os_host__hostname_ipaddr }}"

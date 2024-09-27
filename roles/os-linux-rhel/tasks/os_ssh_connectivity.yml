@@ -1,0 +1,57 @@
+- name: "[os_ssh_connectivity.yml] current timedate"
+  shell: |
+    date +%Y-%m-%d_%H:%M:%S
+  register: current_timedate
+
+- name: "[os_ssh_connectivity.yml] Private key / check"
+  stat:
+    path: "/home/{{ item }}/.ssh/id_rsa"
+  register: ssh_private_key_rsa_check
+  with_items:
+    - "{{ os_user_and_group__user | map(attribute='username') | list }}"
+
+- name: "[os_ssh_connectivity.yml] Private key / check result"
+  debug:
+    msg: "{{ ssh_private_key_rsa_check.results | json_query('[*].{name: item, exists: stat.exists}') }}"
+
+- name: "[os_ssh_connectivity.yml] Private key / backup"
+  shell: |
+    mv /home/{{ item.name }}/.ssh/id_rsa /home/{{ item.name }}/.ssh/id_rsa.{{ current_timedate.stdout }}
+  when:
+    - item.exists
+  with_items:
+    - "{{ ssh_private_key_rsa_check.results | json_query('[*].{name: item, exists: stat.exists}') }}"
+
+- name: "[os_ssh_connectivity.yml] Private key / generate"
+  expect:
+    command: |
+      ssh-keygen -t rsa
+    responses:
+      Enter(.*) : "\r"
+      Overwrite (y/n)? : "y"
+  become: yes
+  become_user: "{{ item }}"
+  with_items:
+    - "{{ os_user_and_group__user | map(attribute='username') | list }}"
+
+- name: "[os_ssh_connectivity.yml] Public key / ssh-copy-id with hostname"
+  expect:
+    command: |
+      ssh-copy-id -i /home/{{ item[0] }}/.ssh/id_rsa.pub {{ item[0] }}@{{ item[1] }}
+    responses:
+      (.*)password : "oracle"
+      Are you sure you want to continue connecting (yes/no)? : "yes"
+  with_nested:
+    - "{{ os_user_and_group__user | map(attribute='username') | list }}"
+    - "{{ os_host__hostname_ipaddr | map(attribute='hostname') | list }}"
+
+- name: "[os_ssh_connectivity.yml] Public key / ssh-copy-id with ipaddr"
+  expect:
+    command: |
+      ssh-copy-id -i /home/{{ item[0] }}/.ssh/id_rsa.pub {{ item[0] }}@{{ item[1] }}
+    responses:
+      (.*)password : "oracle"
+      Are you sure you want to continue connecting (yes/no)? : "yes"
+  with_nested:
+    - "{{ os_user_and_group__user | map(attribute='username') | list }}"
+    - "{{ os_host__hostname_ipaddr | map(attribute='ipaddr') | list }}"

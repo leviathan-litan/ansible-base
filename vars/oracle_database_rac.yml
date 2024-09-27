@@ -1,6 +1,15 @@
 # %%%%%%%%%%%%%%%%%%%%
+# Ansible / 变量
+# %%%%%%%%%%%%%%%%%%%%
+# deploy_hosts: "db-oracle-rac"
+
+# %%%%%%%%%%%%%%%%%%%%
 # Oracle Database 19c RAC / 变量
 # %%%%%%%%%%%%%%%%%%%%
+
+
+# ===================== Database / 数据库
+var__oracle_sid: "orcl"
 
 # ===================== Directory / 目录
 
@@ -43,6 +52,18 @@ os_user_and_group_enabled: yes
 # OS Directory
 os_directory_enabled: yes
 
+# OS Hosts
+os_host_enabled: yes
+
+# OS Network
+os_network_enabled: yes
+
+# OS SSH Connectivity
+os_ssh_connectivity_enabled: yes
+
+# Python
+python_enabled: yes
+
 # ===================== [os_user_and_group.yml]
 
 os_user_and_group__group:
@@ -71,46 +92,46 @@ os_user_and_group__user:
     comment: "Grid Infrastructure User"
     id: 4006
     shell: "/bin/bash"
-    dir_home: "/home/oracle"
+    dir_home: "/home/grid"
     group: "oinstall"
     groups:
       - "dba"
       - "asmdba"
       - "asmadmin"
 
-# os_user_and_group__environment:
-#   # 数据库用户【oracle】
-#   - user: 'oracle'
-#     key: 'ORACLE_SID'
-#     value: '{{ var__oracle_sid }}{{ node_id }}'
-#   - user: 'oracle'
-#     key: 'ORACLE_BASE'
-#     value: '{{ dir__oracle_base }}'
-#   - user: 'oracle'
-#     key: 'ORACLE_HOME'
-#     value: '{{ dir__oracle_home }}'
-#   - user: 'oracle'
-#     key: 'PATH'
-#     value: '$ORACLE_HOME/bin:$PATH:/sbin'
-#   - user: 'oracle'
-#     key: 'LD_LIBRARY_PATH'
-#     value: '$ORACLE_HOME/lib:$LD_LIBRARY_PATH'
-#   # 集群用户【grid】
-#   - user: 'grid'
-#     key: 'ORACLE_SID'
-#     value: '+ASM{{ node_id }}'
-#   - user: 'grid'
-#     key: 'ORACLE_BASE'
-#     value: '{{ dir__grid_base }}'
-#   - user: 'grid'
-#     key: 'ORACLE_HOME'
-#     value: '{{ dir__grid_home }}'
-#   - user: 'grid'
-#     key: 'PATH'
-#     value: '$ORACLE_HOME/bin:$PATH:/sbin'
-#   - user: 'grid'
-#     key: 'LD_LIBRARY_PATH'
-#     value: '$ORACLE_HOME/lib:$LD_LIBRARY_PATH'
+os_user_and_group__environment:
+  # 数据库用户【oracle】
+  - user: 'oracle'
+    key: 'ORACLE_SID'
+    value: '{{ var__oracle_sid }}{{ node_id }}'
+  - user: 'oracle'
+    key: 'ORACLE_BASE'
+    value: '{{ dir__oracle_base }}'
+  - user: 'oracle'
+    key: 'ORACLE_HOME'
+    value: '{{ dir__oracle_home }}'
+  - user: 'oracle'
+    key: 'PATH'
+    value: '$ORACLE_HOME/bin:$PATH:/sbin'
+  - user: 'oracle'
+    key: 'LD_LIBRARY_PATH'
+    value: '$ORACLE_HOME/lib:$LD_LIBRARY_PATH'
+  # 集群用户【grid】
+  - user: 'grid'
+    key: 'ORACLE_SID'
+    value: '+ASM{{ node_id }}'
+  - user: 'grid'
+    key: 'ORACLE_BASE'
+    value: '{{ dir__grid_base }}'
+  - user: 'grid'
+    key: 'ORACLE_HOME'
+    value: '{{ dir__grid_home }}'
+  - user: 'grid'
+    key: 'PATH'
+    value: '$ORACLE_HOME/bin:$PATH:/sbin'
+  - user: 'grid'
+    key: 'LD_LIBRARY_PATH'
+    value: '$ORACLE_HOME/lib:$LD_LIBRARY_PATH'
 
 # ===================== [os_directory.yml]
 
@@ -138,6 +159,10 @@ os_directory__directory:
   - path: "{{ dir__oracle_upload_oracle_installmedia_patch }}"
     owner: "oracle"
     group: "oinstall"
+    mode: "0777"
+  - path: "{{ dir__oracle_upload_python_pexpect_unziped }}"
+    owner: "root"
+    group: "root"
     mode: "0777"
   - path: "{{ dir__oracle_base_dir__mountpoint }}"
     owner: "oracle"
@@ -167,3 +192,58 @@ os_directory__directory:
     owner: "grid"
     group: "oinstall"
     mode: "0755"
+
+# ===================== [os_hosts.yml]
+
+deploy_hosts: "db-oracle-rac"
+os_host__comment: "# Oracle Database 19c RAC"
+
+# --- node1
+node1_hostname_public: "node1"
+
+# --- node2
+node2_hostname_public: "node2"
+
+os_host__hostname_ipaddr:
+  # --- node1
+  - hostname: "{{ node1_hostname_public }}"
+    ipaddr: "192.168.2.18"
+    node_id: 1
+  - hostname: "{{ node1_hostname_public }}-vip"
+    ipaddr: "10.10.10.11"
+    node_id: 1
+  - hostname: "{{ node1_hostname_public }}-priv-1"
+    ipaddr: "10.10.10.11"
+    node_id: 1
+  - hostname: "{{ node1_hostname_public }}-priv-2"
+    ipaddr: "10.10.10.11"
+    node_id: 1
+  # --- node2
+  - hostname: "{{ node2_hostname_public }}"
+    ipaddr: "192.168.2.20"
+    node_id: 2
+  - hostname: "{{ node2_hostname_public }}-vip"
+    ipaddr: "10.10.10.11"
+    node_id: 2
+  - hostname: "{{ node2_hostname_public }}-priv-1"
+    ipaddr: "10.10.10.11"
+    node_id: 2
+  - hostname: "{{ node2_hostname_public }}-priv-2"
+    ipaddr: "10.10.10.11"
+    node_id: 2
+  # --- other
+  - hostname: "scan1"
+    ipaddr: ""
+    node_id: "all"
+
+# ===================== [os_network.yml]
+
+os_network__network_interfaces:
+  - category: "public"
+    nic_name: "ens192"
+  - category: "private1"
+    nic_name: "ens224"
+  - category: "private2"
+    nic_name: "ens256"
+
+# ===================== [python.yml]

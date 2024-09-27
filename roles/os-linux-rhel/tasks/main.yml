@@ -11,3 +11,23 @@
 - import_tasks: os_directory.yml
   when:
     - os_directory_enabled
+
+# Python
+- import_tasks: python.yml
+  when:
+    - python_enabled
+
+# OS Hosts
+- import_tasks: os_host.yml
+  when:
+    - os_host_enabled
+
+# OS Network
+- import_tasks: os_network.yml
+  when:
+    - os_network_enabled
+
+# OS SSH Connectivity
+- import_tasks: os_ssh_connectivity.yml
+  when:
+    - os_ssh_connectivity_enabled

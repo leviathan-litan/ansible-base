@@ -13,7 +13,19 @@
 # os_user_and_group_enabled: yes
 
 # OS Directory
-os_directory_enabled: yes
+# os_directory_enabled: yes
+
+# OS Hosts
+# os_host_enabled: yes
+
+# OS Network
+# os_network_enabled: yes
+
+# OS SSH Connectivity
+# os_ssh_connectivity_enabled: yes
+
+# Python
+# python_enabled: yes
 
 # ===================== [os_user_and_group.yml]
 
@@ -91,3 +103,60 @@ os_directory_enabled: yes
 #     owner: ""
 #     group: ""
 #     mode: ""
+
+# ===================== [os_hosts.yml]
+
+# --- simple
+# deploy_hosts: "db-oracle-rac"
+# os_host__comment: "# Add"
+
+# --- complex
+# # --- node1
+# node1_hostname_public: "node1"
+
+# # --- node2
+# node2_hostname_public: "node2"
+
+# os_host__hostname_ipaddr:
+#   # --- node1
+#   - hostname: "{{ node1_hostname_public }}"
+#     ipaddr: "192.168.2.18"
+#     node_id: 1
+#   - hostname: "{{ node1_hostname_public }}-vip"
+#     ipaddr: "10.10.10.11"
+#     node_id: 1
+#   - hostname: "{{ node1_hostname_public }}-priv-1"
+#     ipaddr: "10.10.10.11"
+#     node_id: 1
+#   - hostname: "{{ node1_hostname_public }}-priv-2"
+#     ipaddr: "10.10.10.11"
+#     node_id: 1
+#   # --- node2
+#   - hostname: "{{ node2_hostname_public }}"
+#     ipaddr: "192.168.2.20"
+#     node_id: 2
+#   - hostname: "{{ node2_hostname_public }}-vip"
+#     ipaddr: "10.10.10.11"
+#     node_id: 2
+#   - hostname: "{{ node2_hostname_public }}-priv-1"
+#     ipaddr: "10.10.10.11"
+#     node_id: 2
+#   - hostname: "{{ node2_hostname_public }}-priv-2"
+#     ipaddr: "10.10.10.11"
+#     node_id: 2
+#   # --- other
+#   - hostname: "scan1"
+#     ipaddr: ""
+#     node_id: "all"
+
+# ===================== [os_network.yml]
+
+# os_network__network_interfaces:
+#   - category: "public"
+#     nic_name: "ens192"
+#   - category: "private1"
+#     nic_name: "ens224"
+#   - category: "private2"
+#     nic_name: "ens256"
+
+# ===================== [python.yml]
