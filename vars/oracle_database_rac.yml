@@ -95,6 +95,9 @@ os_multipath_storage_dd_if_enabled: yes
 # Python
 python_enabled: yes
 
+# Oracle / install media / upload
+oracle_upload_install_media_enabled: yes
+
 # ===================== [os_user_and_group.yml]
 
 os_user_and_group__group:
@@ -566,5 +569,17 @@ os_fdisk__mount_point: "{{ dir__oracle_base_dir__mountpoint }}"
 os_fdisk__mount_point_owner: "oracle"
 os_fdisk__mount_point_group: "oinstall"
 os_fdisk__mount_point_mode: "0777"
+
+# ===================== [oracle_upload_install_media.yml]
+
+oracle_upload_install_media__file_install_media_grid: "{{ dir__ansible_server__files }}/oracle/LINUX.X64_193000_grid_home.zip"
+oracle_upload_install_media__file_install_media_db: "{{ dir__ansible_server__files }}/oracle/LINUX.X64_193000_db_home.zip"
+
+oracle_upload_install_media__file_install_media_patch_6880880: "{{ dir__ansible_server__files }}/oracle/p6880880_190000_Linux-x86-64.zip"
+oracle_upload_install_media__file_install_media_patch_34518661: "{{ dir__ansible_server__files }}/oracle/p34518661_190000_Linux-x86-64.zip"
+
+oracle_upload_install_media__file_install_media_patch_list:
+  - "{{ oracle_upload_install_media__file_install_media_patch_6880880 }}"
+  - "{{ oracle_upload_install_media__file_install_media_patch_34518661 }}"
 
 # ===================== [python.yml]

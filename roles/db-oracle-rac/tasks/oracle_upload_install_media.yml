@@ -1,0 +1,27 @@
+- name: "[oracle_upload_install_media.yml] Grid software / unarchive"
+  unarchive:
+    owner: grid
+    group: oinstall
+    mode: 0755
+    src: "{{ oracle_upload_install_media__file_install_media_grid }}"
+    dest: "{{ dir__grid_home }}"
+  when: node_id == 1
+
+- name: "[oracle_upload_install_media.yml] Database software / unarchive"
+  unarchive:
+    owner: oracle
+    group: oinstall
+    mode: 0755
+    src: "{{ oracle_upload_install_media__file_install_media_db }}"
+    dest: "{{ dir__oracle_home }}"
+  when: node_id == 1
+
+- name: "[oracle_upload_install_media.yml] Oracle Patch / unarchive"
+  unarchive:
+    owner: grid
+    group: oinstall
+    mode: 0777
+    src: "{{ item }}"
+    dest: "{{ dir__oracle_upload_oracle_installmedia_patch }}"
+  with_items: "{{ oracle_upload_install_media__file_install_media_patch_list }}"
+  when: node_id == 1

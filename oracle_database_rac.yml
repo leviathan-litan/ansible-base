@@ -9,3 +9,11 @@
   become: yes
   become_user: root
   become_method: sudo
+
+- name: "[Oracle DB 19c RAC] Grid and Database"
+  hosts:
+    - db-oracle-rac
+  roles:
+    - { role: db-oracle-rac }
+  vars_files:
+    - vars/oracle_database_rac.yml
