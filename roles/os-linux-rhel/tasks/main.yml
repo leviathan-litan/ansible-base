@@ -7,6 +7,11 @@
   when:
     - os_user_and_group_enabled
 
+# OS / Storage / fdisk
+- import_tasks: os_fdisk.yml
+  when:
+    - os_fdisk_enabled
+
 # OS Directory
 - import_tasks: os_directory.yml
   when:

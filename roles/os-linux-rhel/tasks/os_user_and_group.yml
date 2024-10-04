@@ -27,10 +27,10 @@
 #   with_items: 
 #     - "{{ os_user_and_group__user }}"
 
-# - name: "[os-linux-rhel] modify user enviroment variables"
-#   lineinfile:
-#     backup: yes
-#     path: "/home/{{ item.user }}/.bash_profile"
-#     line: "export {{ item.key }}={{ item.value }}"
-#   with_items:
-#     - "{{ os_user_and_group__environment }}"
+- name: "[os-linux-rhel] modify user enviroment variables"
+  lineinfile:
+    backup: yes
+    path: "/home/{{ item.user }}/.bash_profile"
+    line: "export {{ item.key }}={{ item.value }}"
+  with_items:
+    - "{{ os_user_and_group__environment }}"

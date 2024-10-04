@@ -48,49 +48,52 @@ dir__grid_home: "{{ dir__oracle_base }}/19/grid_home"
 # ===================== Task Switch
 
 # OS User and Group
-os_user_and_group_enabled: no
+os_user_and_group_enabled: yes
 
 # OS Directory
-os_directory_enabled: no
+os_directory_enabled: yes
 
 # OS Hosts
-os_host_enabled: no
+os_host_enabled: yes
 
 # OS Network
 os_network_enabled: yes
 os_network_connections_refresh_and_config_enabled: yes
 
 # OS SSH Connectivity
-os_ssh_connectivity_enabled: no
+os_ssh_connectivity_enabled: yes
 
 # OS YUM
-os_yum_enabled: no
+os_yum_enabled: yes
 
 # OS Linux Service
-os_service_enabled: no
+os_service_enabled: yes
 
 # OS Linux SELinux
-os_selinux_enabled: no
+os_selinux_enabled: yes
 
 # OS Linux Time
-os_time_enabled: no
-os_time__ntp_enabled: no
+os_time_enabled: yes
+os_time__ntp_enabled: yes
 
 # OS Grub
-os_grub_enabled: no
+os_grub_enabled: yes
 
 # OS Linux Kernel Parameters
-os_kernel_parameters_enabled: no
+os_kernel_parameters_enabled: yes
+
+# OS / Storage / fdisk
+os_fdisk_enabled: yes
 
 # OS/ Storage / iSCSI discovery
-os_iscsi_discovery_enabled: no
+os_iscsi_discovery_enabled: yes
 
 # OS / Storage / Multipath
-os_multipath_enabled: no
-os_multipath_storage_dd_if_enabled: no
+os_multipath_enabled: yes
+os_multipath_storage_dd_if_enabled: yes
 
 # Python
-python_enabled: no
+python_enabled: yes
 
 # ===================== [os_user_and_group.yml]
 
@@ -554,5 +557,14 @@ os_iscsi_discovery__storage_wwid_and_alias:
 # ===================== [os_multipath.yml]
 
 # ===================== [os_network_connections_refresh_and_config.yml]
+
+# ===================== [os_fdisk.yml]
+
+os_fdisk__device: "/dev/sdh"
+
+os_fdisk__mount_point: "{{ dir__oracle_base_dir__mountpoint }}"
+os_fdisk__mount_point_owner: "oracle"
+os_fdisk__mount_point_group: "oinstall"
+os_fdisk__mount_point_mode: "0777"
 
 # ===================== [python.yml]

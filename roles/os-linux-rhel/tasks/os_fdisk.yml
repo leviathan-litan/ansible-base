@@ -1,0 +1,28 @@
+- name: "[os_fdisk.yml] format {{ os_fdisk__device }} to XFS"
+  filesystem:
+    fstype: xfs
+    dev: "{{ os_fdisk__device }}"
+    opts: -n ftype=1 -L "data"
+
+- name: "[os_fdisk.yml] create mount point {{ os_fdisk__mount_point }}"
+  file:
+    path: "{{ os_fdisk__mount_point }}"
+    state: directory
+    owner: "{{ os_fdisk__mount_point_owner }}"
+    group: "{{ os_fdisk__mount_point_group }}"
+    mode: "{{ os_fdisk__mount_point_mode }}"
+
+- name: "[os_fdisk.yml] get uuid"
+  shell: |
+    blkid -s UUID {{ os_fdisk__device }} | cut -d " " -f2
+  register: os_fdisk__uuid
+
+- name: "[os_fdisk.yml] /etc/fstab add record"
+  lineinfile:
+    line: "{{os_fdisk__uuid.stdout}} {{ os_fdisk__mount_point }} xfs defaults 0 0"
+    state: present
+    path: /etc/fstab
+
+- name: "[os_fdisk.yml] mount and check"
+  shell: |
+    mount -a && df -h

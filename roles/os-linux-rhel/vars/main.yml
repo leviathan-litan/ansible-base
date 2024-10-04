@@ -44,6 +44,9 @@
 # OS Linux Kernel Parameters
 # os_kernel_parameters_enabled: yes
 
+# OS / Storage / fdisk
+# os_fdisk_enabled: yes
+
 # OS/ Storage / iSCSI discovery
 # os_iscsi_discovery_enabled: yes
 
@@ -416,5 +419,14 @@
 # ===================== [os_multipath.yml]
 
 # ===================== [os_network_connections_refresh_and_config.yml]
+
+# ===================== [os_fdisk.yml]
+
+# os_fdisk__device: "/dev/sdb"
+
+# os_fdisk__mount_point: "{{ dir__oracle_base_dir__mountpoint }}"
+# os_fdisk__mount_point_owner: "oracle"
+# os_fdisk__mount_point_group: "oinstall"
+# os_fdisk__mount_point_mode: "0777"
 
 # ===================== [python.yml]
