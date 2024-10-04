@@ -1,0 +1,58 @@
+# ===================== 多路径的配置 与 UDEV绑定
+- name: "[os_multipath.yml] add multipath to kernel module"
+  shell: |
+    modprobe dm-multipath && modprobe dm-round-robin
+
+- name: "[os_multipath.yml] multipath config file / automatic generation"
+  shell: |
+    mpathconf --enable
+
+- name: "[os_multipath.yml] multipath config file [/etc/multipath.conf] / custom defined"
+  template:
+    backup: yes
+    src: "multipath/multipath.conf.j2"
+    dest: "/etc/multipath.conf"
+
+- name: "[os_multipath.yml] multipath config file [/etc/multipath/wwids] / custom defined"
+  lineinfile:
+    backup: yes
+    path: "/etc/multipath/wwids"
+    line: "/{{ item.wwid }}/"
+  with_items: "{{ os_iscsi_discovery__storage_wwid_and_alias }}"
+
+- name: "[os_multipath.yml] multipathd / started and enabled"
+  systemd:
+    name: multipathd
+    state: restarted
+    enabled: yes
+
+- name: "[os_multipath.yml] multipathd / udev"
+  copy:
+    backup: yes
+    force: yes
+    owner: root
+    group: root
+    mode: 0755
+    src: "multipath/99-multipath-oracleasm.rules"
+    dest: "/etc/udev/rules.d/99-multipath-oracleasm.rules"
+
+- name: "[os_multipath.yml] multipathd / udev / reload"
+  # RHEL 7.9
+  # shell: |
+  #   /sbin/udevadmin control --reload-rules
+  # RHEL 8.10
+  shell: |
+    /usr/sbin/udevadm control --reload-rules
+  
+- name: "[os_multipath.yml] multipathd / udev / change trigger"
+  shell: |
+    /usr/sbin/udevadm trigger --type=devices --action=change
+
+# ===================== 清理ASM盘头
+
+- name: "[os_multipath.yml] multipathd / storage / clean disk"
+  shell: |
+    dd if=/dev/zero of=/dev/mapper/{{ item.alias }} bs=1M count=1000
+  with_items: "{{ os_iscsi_discovery__storage_wwid_and_alias }}"
+  when:
+    - os_multipath_storage_dd_if_enabled

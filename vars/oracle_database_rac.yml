@@ -19,6 +19,7 @@ dir__oracle_upload_base: "{{ dir__ansible_client__files }}/oracle"
 dir__oracle_upload_yum_repofile: "{{ dir__oracle_upload_base }}/yum_repofile"
 dir__oracle_upload_yum_repodata: "{{ dir__oracle_upload_base }}/yum_repodata"
 dir__oracle_upload_rpm: "{{ dir__oracle_upload_base }}/rpm"
+dir__oracle_upload_network_scripts: "{{ dir__oracle_upload_base }}/network-scripts"
 
 dir__oracle_upload_oracle_installmedia: "{{ dir__oracle_upload_base }}/oracle_installmedia"
 dir__oracle_upload_oracle_installmedia_patch: "{{ dir__oracle_upload_base }}/oracle_installmedia_patch"
@@ -47,41 +48,49 @@ dir__grid_home: "{{ dir__oracle_base }}/19/grid_home"
 # ===================== Task Switch
 
 # OS User and Group
-os_user_and_group_enabled: yes
+os_user_and_group_enabled: no
 
 # OS Directory
-os_directory_enabled: yes
+os_directory_enabled: no
 
 # OS Hosts
-os_host_enabled: yes
+os_host_enabled: no
 
 # OS Network
 os_network_enabled: yes
+os_network_connections_refresh_and_config_enabled: yes
 
 # OS SSH Connectivity
-os_ssh_connectivity_enabled: yes
+os_ssh_connectivity_enabled: no
 
 # OS YUM
-os_yum_enabled: yes
+os_yum_enabled: no
 
 # OS Linux Service
-os_service_enabled: yes
+os_service_enabled: no
 
 # OS Linux SELinux
-os_selinux_enabled: yes
+os_selinux_enabled: no
 
 # OS Linux Time
-os_time_enabled: yes
-os_time__ntp_enabled: yes
+os_time_enabled: no
+os_time__ntp_enabled: no
 
 # OS Grub
-os_grub_enabled: yes
+os_grub_enabled: no
 
 # OS Linux Kernel Parameters
-os_kernel_parameters_enabled: yes
+os_kernel_parameters_enabled: no
+
+# OS/ Storage / iSCSI discovery
+os_iscsi_discovery_enabled: no
+
+# OS / Storage / Multipath
+os_multipath_enabled: no
+os_multipath_storage_dd_if_enabled: no
 
 # Python
-python_enabled: yes
+python_enabled: no
 
 # ===================== [os_user_and_group.yml]
 
@@ -159,6 +168,10 @@ os_directory__directory:
     owner: "root"
     group: "root"
     mode: "0777"
+  - path: "{{ dir__oracle_upload_network_scripts }}"
+    owner: "root"
+    group: "root"
+    mode: "0777"
   - path: "{{ dir__oracle_upload_yum_repofile }}"
     owner: "root"
     group: "root"
@@ -214,8 +227,16 @@ os_directory__directory:
 
 # ===================== [os_hosts.yml]
 
+# -------------
+# --- simple
+# -------------
+
 deploy_hosts: "db-oracle-rac"
 os_host__comment: "# Oracle Database 19c RAC"
+
+# -------------
+# --- complex
+# -------------
 
 # --- node1
 node1_hostname_public: "node1"
@@ -223,47 +244,85 @@ node1_hostname_public: "node1"
 # --- node2
 node2_hostname_public: "node2"
 
+# --- total
 os_host__hostname_ipaddr:
+  # -------------
   # --- node1
+  # -------------
+  # 业务网段：public ip
   - hostname: "{{ node1_hostname_public }}"
+    nic_name: "bond0"
     ipaddr: "192.168.2.18"
+    gateway: "192.168.2.1"
+    dns: "192.168.2.1"
     node_id: 1
+  # 业务网段：virtual ip / vip
   - hostname: "{{ node1_hostname_public }}-vip"
-    ipaddr: "10.10.10.11"
+    nic_name: ""
+    ipaddr: "192.168.2.28"
     node_id: 1
+  # 私有网段（1）：private ip 1
   - hostname: "{{ node1_hostname_public }}-priv-1"
-    ipaddr: "10.10.10.11"
+    nic_name: "ens224"
+    ipaddr: "192.168.3.18"
     node_id: 1
+  # 私有网段（2）：private ip 2
   - hostname: "{{ node1_hostname_public }}-priv-2"
-    ipaddr: "10.10.10.11"
+    nic_name: "ens256"
+    ipaddr: "192.168.4.18"
     node_id: 1
+  # -------------
   # --- node2
+  # -------------
   - hostname: "{{ node2_hostname_public }}"
+    nic_name: "bond0"
     ipaddr: "192.168.2.20"
+    gateway: "192.168.2.1"
+    dns: "192.168.2.1"
     node_id: 2
   - hostname: "{{ node2_hostname_public }}-vip"
-    ipaddr: "10.10.10.11"
+    nic_name: ""
+    ipaddr: "192.168.2.30"
     node_id: 2
   - hostname: "{{ node2_hostname_public }}-priv-1"
-    ipaddr: "10.10.10.11"
+    nic_name: "ens224"
+    ipaddr: "192.168.3.20"
     node_id: 2
   - hostname: "{{ node2_hostname_public }}-priv-2"
-    ipaddr: "10.10.10.11"
+    nic_name: "ens256"
+    ipaddr: "192.168.4.20"
     node_id: 2
   # --- other
   - hostname: "scan1"
+    nic_name: ""
     ipaddr: ""
-    node_id: "all"
+    node_id: "192.168.2.90"
 
 # ===================== [os_network.yml]
 
+# 集群节点间相同「网段」所对应的「网卡」名称，必须一致
 os_network__network_interfaces:
+  # --- 绑定网卡
+  #     绑定网卡的「从属网卡」会打上标签「role: slave」
+  - category: "bond"
+    nic_name: "bond0"
+    role: "master"
+  # --- 业务网段：主网卡
   - category: "public"
     nic_name: "ens192"
+    role: "slave"
+  # --- 业务网段：副网卡
+  - category: "public"
+    nic_name: "ens161"
+    role: "slave"
+  # --- 私有网段（1）：主网卡
   - category: "private1"
     nic_name: "ens224"
+    role: "normal"
+  # --- 私有网段（2）：主网卡
   - category: "private2"
     nic_name: "ens256"
+    role: "normal"
 
 # ===================== [os_yum.yml]
 
@@ -468,5 +527,32 @@ list__os_limits:
     limit_type: "hard"
     limit_item: "memlock"
     value: "{{ linux_command_kernel_param__memlock.stdout }}"
+
+# ===================== [os_iscsi_discovery.yml]
+
+os_iscsi_discovery__iscsi_server_ip: "192.168.2.21"
+
+# 关系列表：磁盘的WWID 与 别名（LUN别名/多路径别名）
+os_iscsi_discovery__storage_wwid_and_alias:
+  # 磁盘组：OCR
+  - wwid: "14f504e46494c455258714c6349372d3533345a2d4c326475"
+    alias: "asm_ocr01"
+  - wwid: "14f504e46494c455275544b32466e2d51714c792d46623352"
+    alias: "asm_ocr02"
+  - wwid: "14f504e46494c4552314c476159782d416d47572d31336b48"
+    alias: "asm_ocr03"
+  # 磁盘组：DATA
+  - wwid: "14f504e46494c45527846583064622d614936572d4c355950"
+    alias: "asm_data01"
+  # 磁盘组：REDO
+  - wwid: "14f504e46494c45526e67586a4d422d624432562d6d494375"
+    alias: "asm_redo01"
+  # 磁盘组：ARCH
+  - wwid: "14f504e46494c4552574a626864792d343759302d6c454e79"
+    alias: "asm_fra01"
+
+# ===================== [os_multipath.yml]
+
+# ===================== [os_network_connections_refresh_and_config.yml]
 
 # ===================== [python.yml]

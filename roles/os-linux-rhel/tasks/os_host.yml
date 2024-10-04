@@ -1,15 +1,17 @@
-- name: "[os_host.yml] set-hostname / node1"
-  shell: |
-    hostnamectl set-hostname {{ node1_hostname_public }}
-  when:
-    - node_id == 1
+# 设置主机名
+# - name: "[os_host.yml] set-hostname / node1"
+#   shell: |
+#     hostnamectl set-hostname {{ node1_hostname_public }}
+#   when:
+#     - node_id == 1
 
-- name: "[os_host.yml] set-hostname / node2"
-  shell: |
-    hostnamectl set-hostname {{ node2_hostname_public }}
-  when:
-    - node_id == 2
+# - name: "[os_host.yml] set-hostname / node2"
+#   shell: |
+#     hostnamectl set-hostname {{ node2_hostname_public }}
+#   when:
+#     - node_id == 2
 
+# 配置文件 [/etc/hosts]
 - name: "[os_host.yml] Backup /etc/hosts, then add a empty line"
   ansible.builtin.lineinfile:
     path: /etc/hosts

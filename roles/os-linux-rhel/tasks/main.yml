@@ -23,6 +23,10 @@
     - os_host_enabled
 
 # OS Network
+# 涉及网卡配置的任务：
+# 1. 在「内核参数」中添加两个私有网卡的配置「ipv4.nic_name.rp_filter」
+# 2. （可选）刷新网卡配置文件，让配置文件更规范
+# 3. （可选）对业务网段的两张网卡，做网卡绑定（Binding）
 - import_tasks: os_network.yml
   when:
     - os_network_enabled
@@ -58,6 +62,19 @@
     - os_grub_enabled
 
 # OS Linux Kernerl Parameters
+# 涉及内核修改的任务：
+# 1. os_kernel_parameters.yml
+# 2. os_network.yml
 - import_tasks: os_kernel_parameters.yml
   when:
     - os_kernel_parameters_enabled
+
+# OS / Storage / iSCSI discovery
+- import_tasks: os_iscsi_discovery.yml
+  when:
+    - os_iscsi_discovery_enabled
+
+# OS / Storage / Multipath
+- import_tasks: os_multipath.yml
+  when:
+    - os_multipath_enabled

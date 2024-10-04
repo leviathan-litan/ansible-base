@@ -3,5 +3,4 @@
     name: "{{ item }}"
     state: stopped
     enabled: no
-  with_items: 
-    - os_service__service_list
+  with_items: "{{ os_service__service_list }}"

@@ -1,0 +1,64 @@
+- name: "[os_network_connections_refresh_and_config.yml] mac address"
+  shell: |
+    cat /sys/class/net/{{ item.nic_name }}/address
+  register: mac_addresses
+  with_items:
+    - "{{ os_network__network_interfaces | json_query('[?category!=`bond`]') | list }}"
+
+# 两个属性：
+# 1. nic_name
+# 2. mac_address
+- name: "[os_network_connections_refresh_and_config.yml] mac address / display"
+  debug:
+    msg: "{{ mac_addresses.results | json_query('[*].{nic_name: item.nic_name, mac_address: stdout}') }}"
+
+- name: "[os_network_connections_refresh_and_config.yml] NetworkManager / restarted and enabled"
+  systemd:
+    name: NetworkManager
+    state: restarted
+    enabled: yes
+
+- name: "[os_network_connections_refresh_and_config.yml] network-scripts / network interface configfile / backup"
+  shell: |
+    cp -f /etc/sysconfig/network-scripts/ifcfg-* {{ dir__oracle_upload_network_scripts }}
+  ignore_errors: yes
+
+- name: "[os_network_connections_refresh_and_config.yml] network-scripts / network interface configfile / already"
+  shell: |
+    ls /etc/sysconfig/network-scripts/ifcfg-* | grep -v '\.' | cut -d'-' -f 3
+  register: network_interface_already
+
+- name: "[os_network_connections_refresh_and_config.yml] network-scripts / network interface configfile / already / display"
+  debug:
+    msg: "{{ network_interface_already.stdout_lines }}"
+
+- name: "[os_network_connections_refresh_and_config.yml] 存在于 Ansible配置，但不存在于目标机器上的网卡配置文件"
+  debug:
+    msg: "{{ os_network__network_interfaces | map(attribute='nic_name') | list | difference(network_interface_already.stdout_lines) }}"
+
+- name: "[os_network_connections_refresh_and_config.yml] 新增配置文件"
+  file:
+    path: "/etc/sysconfig/network-scripts/ifcfg-{{ item }}"
+    state: touch
+    backup: yes
+    owner: "root"
+    group: "root"
+    mode: 0644
+  with_items:
+    - "{{ os_network__network_interfaces | map(attribute='nic_name') | list | difference(network_interface_already.stdout_lines) }}"
+
+- name: "[os_network_connections_refresh_and_config.yml] network-scripts / configfile"
+  template:
+    backup: yes
+    owner: "root"
+    group: "root"
+    mode: 0644
+    src: "network-scripts/ifcfg-X.j2"
+    dest: "/etc/sysconfig/network-scripts/ifcfg-{{ item.nic_name }}"
+  vars:
+    interface_type: "{{ item.category }}"
+    interface_role: "{{ item.role }}"
+    interface_name: "{{ item.nic_name }}"
+    interface_device: "{{ item.nic_name }}"
+    interface_mac_list: "{{ mac_addresses.results | json_query('[*].{nic_name: item.nic_name, mac_address: stdout}') }}"
+  with_items: "{{ os_network__network_interfaces }}"

@@ -7,7 +7,7 @@
 
 - name: "[os_network.yml] display"
   debug:
-    msg: "{{ os_network__network_interfaces | json_query('[?category!=`public`]') | list }}"
+    msg: "{{ os_network__network_interfaces | json_query('[?(category!=`public` && category!=`bond`)]') | list }}"
 
 - name: "[os_network.yml] linux system kernel net.ipv4.conf.xxx.rp_filter"
   sysctl:
@@ -16,8 +16,14 @@
     name: "net.ipv4.conf.{{ item.nic_name }}.rp_filter"
     value: "2"
   with_items:
-    - "{{ os_network__network_interfaces | json_query('[?category!=`public`]') | list }}"
+    - "{{ os_network__network_interfaces | json_query('[?(category!=`public` && category!=`bond`)]') | list }}"
 
-# - name: "[os_network.yml] 网卡配置 / 普通"
+# 主要任务：
+# 1. 刷新网卡连接
+# 2. 为目标网卡配置：对应的IP地址
+- name: "[os_network.yml] 网卡配置 / 普通"
+  include_tasks: os_network_connections_refresh_and_config.yml
+  when:
+    - os_network_connections_refresh_and_config_enabled
 
 # - name: "[os_network.yml] 网卡配置 / 双网卡绑定"

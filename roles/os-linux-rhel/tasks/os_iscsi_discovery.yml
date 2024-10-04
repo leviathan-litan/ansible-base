@@ -1,0 +1,26 @@
+# ===================== 从 iSCSI Server 获取 LUN
+
+- name: "[os_multipath.yml] iscsid / started and enabled"
+  systemd:
+    name: iscsid
+    state: started
+    enabled: yes
+
+- name: "[os_multipath.yml] iscsiadm / discovery"
+  shell: |
+    iscsiadm -m discovery -t sendtargets -p {{ os_iscsi_discovery__iscsi_server_ip }}
+  register: iscsi_discovery
+
+- name: "[os_multipath.yml] iscsiadm / discovery / result"
+  debug:
+    msg: "{{ iscsi_discovery.stdout_lines }}"
+
+- name: "[os_multipath.yml] iscsiadm /  luns"
+  shell: |
+    iscsiadm -m node -T {{ item.alias }} -p {{ os_iscsi_discovery__iscsi_server_ip }} -l
+  with_items: "{{ os_iscsi_discovery__storage_wwid_and_alias }}"
+
+- name: "[os_multipath.yml] iscsiadm /  luns / automatic"
+  shell: |
+    iscsiadm -m node -T {{ item.alias }} -p {{ os_iscsi_discovery__iscsi_server_ip }} --op update -n node.startup -v automatic
+  with_items: "{{ os_iscsi_discovery__storage_wwid_and_alias }}"

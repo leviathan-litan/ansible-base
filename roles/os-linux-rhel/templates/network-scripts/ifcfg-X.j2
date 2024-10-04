@@ -1,0 +1,72 @@
+# Basic
+{% if interface_type == "bond" and interface_role == "master" %}
+TYPE=bond
+BONDING_MASTER=yes
+BONDING_OPTS="mode=1 miimon=100"
+{% else %}
+TYPE=Ethernet
+{% endif %}
+
+PROXY_METHOD=none
+BROWSER_ONLY=no
+
+BOOTPROTO=none
+ONBOOT=yes
+DEFROUTE=yes
+
+# Both
+NAME={{ interface_name }}
+DEVICE={{ interface_device }}
+
+{% if interface_role != "master" %}
+# UUID=12345678-1234-1234-1234-123456789012
+{% for mac_record in interface_mac_list %}
+{% if mac_record.nic_name == interface_name %}
+HWADDR={{ mac_record.mac_address }}
+{% endif %}
+{% endfor %}
+
+{% endif %}
+
+# IPv4
+# IPV4_FAILURE_FATAL=no
+
+{% if interface_role == "slave" %}
+MASTER=bond0
+SLAVE=yes
+{% else %}
+
+{% for ip_record in os_host__hostname_ipaddr %}
+{% if ip_record.node_id == node_id %}
+{% if ip_record.nic_name is defined %}
+{% if ip_record.nic_name == interface_name %}
+IPADDR={{ ip_record.ipaddr }}
+{% endif %}
+{% endif %}
+{% if ip_record.gateway is defined %}
+GATEWAY={{ ip_record.gateway }}
+{% endif %}
+{% if ip_record.dns is defined %}
+DNS1={{ ip_record.dns }}
+{% endif %}
+{% endif %}
+{% endfor %}
+
+PREFIX=24
+{% endif %}
+
+# IPv6
+# IPV6INIT=yes
+
+# IPV6_AUTOCONF=yes
+# IPV6_FAILURE_FATAL=no
+# IPV6_ADDR_GEN_MODE=stable-privacy
+# IPV6_PRIVACY=no
+
+# IPV6_DEFROUTE=yes
+# IPV6_AUTO_DEFAULTROUTE=yes
+
+# IPV6_PEERDNS=yes
+# IPV6_PEERROUTES=yes
+
+# Finished
