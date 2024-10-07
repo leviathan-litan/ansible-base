@@ -483,18 +483,19 @@ os_yum__install_list:
   - glibc-common
   - glibc-headers
   - ksh
-  - libxcb
-  - libXau
-  - libXi
-  - libX11
-  - libXext
-  - libXtst
-  - libXrender
   - libaio
   - libaio-devel
   - libgcc
+  - libnsl
   - libstdc++
   - libstdc++-devel
+  - libX11
+  - libXau
+  - libxcb
+  - libXext
+  - libXi
+  - libXrender
+  - libXtst
   - make
   - net-tools
   - nfs-utils
