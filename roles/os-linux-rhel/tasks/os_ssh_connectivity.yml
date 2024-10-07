@@ -34,6 +34,14 @@
   with_items:
     - "{{ os_user_and_group__user | map(attribute='username') | list }}"
 
+- name: "[os_ssh_connectivity.yml] 目标记录 / 主机名"
+  debug:
+    msg: "{{ os_host__hostname_ipaddr | json_query('[?(nic_name==`bond0`)]') | list | map(attribute='hostname') | list }}"
+
+- name: "[os_ssh_connectivity.yml] 目标记录 / IP地址"
+  debug:
+    msg: "{{ os_host__hostname_ipaddr | json_query('[?(nic_name==`bond0`)]') | list | map(attribute='ipaddr') | list }}"
+
 - name: "[os_ssh_connectivity.yml] Public key / ssh-copy-id with hostname"
   expect:
     command: |
@@ -43,7 +51,7 @@
       Are you sure you want to continue connecting (yes/no)? : "yes"
   with_nested:
     - "{{ os_user_and_group__user | map(attribute='username') | list }}"
-    - "{{ os_host__hostname_ipaddr | map(attribute='hostname') | list }}"
+    - "{{ os_host__hostname_ipaddr | json_query('[?(nic_name==`bond0`)]') | list | map(attribute='hostname') | list }}"
 
 - name: "[os_ssh_connectivity.yml] Public key / ssh-copy-id with ipaddr"
   expect:
@@ -54,4 +62,4 @@
       Are you sure you want to continue connecting (yes/no)? : "yes"
   with_nested:
     - "{{ os_user_and_group__user | map(attribute='username') | list }}"
-    - "{{ os_host__hostname_ipaddr | map(attribute='ipaddr') | list }}"
+    - "{{ os_host__hostname_ipaddr | json_query('[?(nic_name==`bond0`)]') | list | map(attribute='ipaddr') | list }}"

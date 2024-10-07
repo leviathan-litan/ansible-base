@@ -1,3 +1,11 @@
 - import_tasks: oracle_upload_install_media.yml
   when:
     - oracle_upload_install_media_enabled
+
+- import_tasks: oracle_software_grid.yml
+  when:
+    - oracle_software_grid_enabled
+
+- import_tasks: oracle_software_db.yml
+  when:
+    - oracle_software_db_enabled

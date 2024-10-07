@@ -1,0 +1,58 @@
+- name: "[oracle_software_db.yml] Current Date time"
+  shell: |
+    date '+%Y_%m_%d__%H_%M_%S'
+  register: linux_command_date
+
+- name: "[oracle_software_db.yml] DB Home/ OPatch / check"
+  stat:
+    path: "{{ dir__db_home }}/OPatch"
+  register: linux_command__db_opatch_backup_check
+
+- name: "[oracle_software_db.yml] DB Home/ OPatch / check / display"
+  debug:
+    msg: "目录存在"
+  when: linux_command__db_opatch_backup_check.stat.exists
+
+- name: "[oracle_software_db.yml] DB Home/ OPatch / backup"
+  shell: |
+    mv {{ dir__db_home }}/OPatch {{ dir__db_home }}/OPatch_{{ linux_command_date.stdout }}
+  become: yes
+  become_user: db
+  when: linux_command__db_opatch_backup_check.stat.exists
+
+- name: "[oracle_software_db.yml] DB Home/ OPatch / new install"
+  shell: |
+    cp -rf {{ dir__oracle_upload_oracle_installmedia_patch_6880880_unziped }} {{ dir__db_home }}
+  become: yes
+  become_user: db
+  when: linux_command__db_opatch_backup_check.stat.exists
+
+- name: "[oracle_software_db.yml] DB / Response File"
+  template:
+    backup: yes
+    owner: oracle
+    group: oinstall
+    mode: 0755
+    src: "response_files/db_install.rsp.j2"
+    dest: "{{ oracle_software__responsefile_oracle }}"
+  when: node_id == 1
+  
+- name: "DB：静默安装 - 命令"
+  debug:
+    msg: "time {{ dir__oracle_home }}/runInstaller -silent -ignorePrereqFailure -responseFile {{ oracle_software__responsefile_oracle }} -applyRU {{ dir__oracle_upload_oracle_installmedia_patch_34518661_unziped }}"
+  when: node_id == 1
+
+- name: "DB：静默安装"
+  expect:
+    command: "{{ dir__oracle_home }}/runInstaller -silent -ignorePrereqFailure -responseFile {{ oracle_software__responsefile_oracle }} -applyRU {{ dir__oracle_upload_oracle_installmedia_patch_34518661_unziped }}"
+    # 因为静默安装的时间非常长，所以超时时间设的长一些，但是要核实的是如果在这时间之前完成了，是否依旧需要持续等 timeout 结束
+    # 这个时间应该尽可能靠近真实的执行时间
+    timeout: 4800
+    responses:
+      # 这里确实可以捕捉到 交互输入的请求，这部分交互自动化的问题已经解决了
+      " Enter password for 'root' user: " : "{{ linux_root_password }}"
+  become: yes
+  become_user: oracle
+  when: node_id == 1
+  # 因为安装过程中会有一些警告（warning），所以导致最终脚本无法以【0】的状态码结束，Ansible可能判定执行失败，其实执行可能是成功的
+  ignore_errors: yes

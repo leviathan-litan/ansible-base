@@ -1,0 +1,68 @@
+- name: "[oracle_software_grid.yml] Current Date time"
+  shell: |
+    date '+%Y_%m_%d__%H_%M_%S'
+  register: linux_command_date
+
+- name: "[oracle_software_grid.yml] Grid Home/ OPatch / check"
+  stat:
+    path: "{{ dir__grid_home }}/OPatch"
+  register: linux_command__grid_opatch_backup_check
+
+- name: "[oracle_software_grid.yml] Grid Home/ OPatch / check / display"
+  debug:
+    msg: "目录存在"
+  when: linux_command__grid_opatch_backup_check.stat.exists
+
+- name: "[oracle_software_grid.yml] Grid Home/ OPatch / backup"
+  shell: |
+    mv {{ dir__grid_home }}/OPatch {{ dir__grid_home }}/OPatch_{{ linux_command_date.stdout }}
+  become: yes
+  become_user: grid
+  when: linux_command__grid_opatch_backup_check.stat.exists
+
+- name: "[oracle_software_grid.yml] Grid Home/ OPatch / new install"
+  shell: |
+    cp -rf {{ dir__oracle_upload_oracle_installmedia_patch_6880880_unziped }} {{ dir__grid_home }}
+  become: yes
+  become_user: grid
+  when: linux_command__grid_opatch_backup_check.stat.exists
+
+# - name: "[oracle_software_grid.yml] set_facts / nic_name / private 1 and private 2 / display"
+#   debug:
+#     msg: "nic_name_priv1[{{ nic_name_priv1 }}] / nic_name_priv2[{{ nic_name_priv2 }}]"
+#   when: node_id == 1
+
+# - name: "[oracle_software_grid.yml] set_facts / subnet / bond0 and private 1 and private 2 / display"
+#   debug:
+#     msg: "ipaddr_subnet_bond0[{{ ipaddr_subnet_bond0 }}] / ipaddr_subnet_priv1[{{ ipaddr_subnet_priv1 }}] / ipaddr_subnet_priv2[{{ ipaddr_subnet_priv2 }}]"
+#   when: node_id == 1
+
+- name: "[oracle_software_grid.yml] Grid / Response File"
+  template:
+    backup: yes
+    owner: grid
+    group: oinstall
+    mode: 0755
+    src: "response_files/grid_install.rsp.j2"
+    dest: "{{ oracle_software__responsefile_grid }}"
+  when: node_id == 1
+
+- name: "Grid：静默安装 - 命令"
+  debug:
+    msg: "time {{ dir__grid_home }}/gridSetup.sh -silent -ignorePrereqFailure -responseFile {{ oracle_software__responsefile_grid }} -applyRU {{ dir__oracle_upload_oracle_installmedia_patch_34518661_unziped }}"
+  when: node_id == 1
+
+- name: "Grid：静默安装"
+  expect:
+    command: "{{ dir__grid_home }}/gridSetup.sh -silent -ignorePrereqFailure -responseFile {{ oracle_software__responsefile_grid }} -applyRU {{ dir__oracle_upload_oracle_installmedia_patch_34518661_unziped }}"
+    # 因为静默安装的时间非常长，所以超时时间设的长一些，但是要核实的是如果在这时间之前完成了，是否依旧需要持续等 timeout 结束
+    # 这个时间应该尽可能靠近真实的执行时间
+    timeout: 4800
+    responses:
+      # 这里确实可以捕捉到 交互输入的请求，这部分交互自动化的问题已经解决了
+      " Enter password for 'root' user: " : "{{ linux_root_password }}"
+  become: yes
+  become_user: grid
+  when: node_id == 1
+  # 因为安装过程中会有一些警告（warning），所以导致最终脚本无法以【0】的状态码结束，Ansible可能判定执行失败，其实执行可能是成功的
+  ignore_errors: yes

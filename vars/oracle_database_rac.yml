@@ -7,9 +7,45 @@
 # Oracle Database 19c RAC / 变量
 # %%%%%%%%%%%%%%%%%%%%
 
+linux_root_password: "oracle"
 
 # ===================== Database / 数据库
-var__oracle_sid: "orcl"
+
+# 实例名
+oracle_sid: "mes"
+
+# 字符集
+characterSet: "AL32UTF8"
+nationalCharacterSet: "AL16UTF16"
+
+# 集群名称
+cluster_name: 'oracle-cluster'
+
+# 磁盘组
+# - OCR / 存放OCR
+var__grid_diskgroup_ocr:
+- "asm_ocr01"
+- "asm_ocr02"
+- "asm_ocr03"
+
+# - DATA / 存放数据
+var__grid_diskgroup_data:
+- "asm_data01"
+# - "asm_data02"
+# - "asm_data03"
+
+# - HOT DATA / 存放 REDO
+var__grid_diskgroup_redo:
+- "asm_redo01"
+# - "asm_redo02"
+
+# - FRA / 存放归档
+var__grid_diskgroup_fra:
+- "asm_fra01"
+# - "asm_fra02"
+
+# 计算变量
+asm_diskgroup_ocr_disks: "{{ var__grid_diskgroup_ocr | map('regex_replace', '^(.*)$','/dev/mapper/\\1') | list | join(',') }}"
 
 # ===================== Directory / 目录
 
@@ -18,11 +54,15 @@ dir__oracle_upload_base: "{{ dir__ansible_client__files }}/oracle"
 
 dir__oracle_upload_yum_repofile: "{{ dir__oracle_upload_base }}/yum_repofile"
 dir__oracle_upload_yum_repodata: "{{ dir__oracle_upload_base }}/yum_repodata"
+
 dir__oracle_upload_rpm: "{{ dir__oracle_upload_base }}/rpm"
 dir__oracle_upload_network_scripts: "{{ dir__oracle_upload_base }}/network-scripts"
 
 dir__oracle_upload_oracle_installmedia: "{{ dir__oracle_upload_base }}/oracle_installmedia"
 dir__oracle_upload_oracle_installmedia_patch: "{{ dir__oracle_upload_base }}/oracle_installmedia_patch"
+
+dir__oracle_upload_response_file: "{{ dir__oracle_upload_base }}/response_file"
+dir__oracle_upload_sql_file: "{{ dir__oracle_upload_base }}/sql_file"
 
 dir__oracle_upload_oracle_installmedia_patch_6880880_unziped: "{{ dir__oracle_upload_oracle_installmedia_patch }}/OPatch"
 dir__oracle_upload_oracle_installmedia_patch_34518661_unziped: "{{ dir__oracle_upload_oracle_installmedia_patch }}/34518661"
@@ -64,7 +104,7 @@ os_network_connections_refresh_and_config_enabled: yes
 os_ssh_connectivity_enabled: yes
 
 # OS YUM
-os_yum_enabled: yes
+os_yum_enabled: no
 
 # OS Linux Service
 os_service_enabled: yes
@@ -73,8 +113,8 @@ os_service_enabled: yes
 os_selinux_enabled: yes
 
 # OS Linux Time
-os_time_enabled: yes
-os_time__ntp_enabled: yes
+os_time_enabled: no
+os_time__ntp_enabled: no
 
 # OS Grub
 os_grub_enabled: yes
@@ -83,7 +123,7 @@ os_grub_enabled: yes
 os_kernel_parameters_enabled: yes
 
 # OS / Storage / fdisk
-os_fdisk_enabled: yes
+os_fdisk_enabled: no
 
 # OS/ Storage / iSCSI discovery
 os_iscsi_discovery_enabled: yes
@@ -97,6 +137,12 @@ python_enabled: yes
 
 # Oracle / install media / upload
 oracle_upload_install_media_enabled: yes
+
+# Oracle/ grid / install
+oracle_software_grid_enabled: yes
+
+# Oracle/ db / install
+oracle_software_db_enabled: yes
 
 # ===================== [os_user_and_group.yml]
 
@@ -137,7 +183,7 @@ os_user_and_group__environment:
   # 数据库用户【oracle】
   - user: 'oracle'
     key: 'ORACLE_SID'
-    value: '{{ var__oracle_sid }}{{ node_id }}'
+    value: '{{ oracle_sid }}{{ node_id }}'
   - user: 'oracle'
     key: 'ORACLE_BASE'
     value: '{{ dir__oracle_base }}'
@@ -198,6 +244,14 @@ os_directory__directory:
     owner: "oracle"
     group: "oinstall"
     mode: "0777"
+  - path: "{{ dir__oracle_upload_response_file }}"
+    owner: "oracle"
+    group: "oinstall"
+    mode: "0777"
+  - path: "{{ dir__oracle_upload_sql_file }}"
+    owner: "oracle"
+    group: "oinstall"
+    mode: "0777"
   - path: "{{ dir__oracle_upload_python_pexpect_unziped }}"
     owner: "root"
     group: "root"
@@ -244,6 +298,9 @@ os_host__comment: "# Oracle Database 19c RAC"
 # --- complex
 # -------------
 
+scan_network_name: "scan1"
+scan_network_ip: "192.168.2.90"
+
 # --- node1
 node1_hostname_public: "node1"
 
@@ -258,6 +315,7 @@ os_host__hostname_ipaddr:
   # 业务网段：public ip
   - hostname: "{{ node1_hostname_public }}"
     nic_name: "bond0"
+    category: "primary"
     ipaddr: "192.168.2.18"
     gateway: "192.168.2.1"
     dns: "192.168.2.1"
@@ -265,16 +323,19 @@ os_host__hostname_ipaddr:
   # 业务网段：virtual ip / vip
   - hostname: "{{ node1_hostname_public }}-vip"
     nic_name: ""
+    category: "vip"
     ipaddr: "192.168.2.28"
     node_id: 1
   # 私有网段（1）：private ip 1
   - hostname: "{{ node1_hostname_public }}-priv-1"
     nic_name: "ens224"
+    category: "private1"
     ipaddr: "192.168.3.18"
     node_id: 1
   # 私有网段（2）：private ip 2
   - hostname: "{{ node1_hostname_public }}-priv-2"
     nic_name: "ens256"
+    category: "private2"
     ipaddr: "192.168.4.18"
     node_id: 1
   # -------------
@@ -282,27 +343,32 @@ os_host__hostname_ipaddr:
   # -------------
   - hostname: "{{ node2_hostname_public }}"
     nic_name: "bond0"
+    category: "primary"
     ipaddr: "192.168.2.20"
     gateway: "192.168.2.1"
     dns: "192.168.2.1"
     node_id: 2
   - hostname: "{{ node2_hostname_public }}-vip"
     nic_name: ""
+    category: "vip"
     ipaddr: "192.168.2.30"
     node_id: 2
   - hostname: "{{ node2_hostname_public }}-priv-1"
     nic_name: "ens224"
+    category: "private1"
     ipaddr: "192.168.3.20"
     node_id: 2
   - hostname: "{{ node2_hostname_public }}-priv-2"
     nic_name: "ens256"
+    category: "private"
     ipaddr: "192.168.4.20"
     node_id: 2
   # --- other
-  - hostname: "scan1"
+  - hostname: "{{ scan_network_name }}"
     nic_name: ""
-    ipaddr: ""
-    node_id: "192.168.2.90"
+    category: "scan"
+    ipaddr: "{{ scan_network_ip }}"
+    node_id: ""
 
 # ===================== [os_network.yml]
 
@@ -329,6 +395,42 @@ os_network__network_interfaces:
   - category: "private2"
     nic_name: "ens256"
     role: "normal"
+
+# 额外设定
+nic_name_priv1: "{{ os_network__network_interfaces | json_query('[?(category==`private1`)]') | json_query('[0].nic_name') }}"
+nic_name_priv2: "{{ os_network__network_interfaces | json_query('[?(category==`private2`)]') | json_query('[0].nic_name') }}"
+
+json_query_str_priv1: "[?(node_id==`1` && nic_name==`{{ nic_name_priv1 }}`)]"
+json_query_str_priv2: "[?(node_id==`1` && nic_name==`{{ nic_name_priv2 }}`)]"
+
+ipaddr_subnet_bond0: "{{ os_host__hostname_ipaddr | json_query('[?(node_id==`1` && nic_name==`bond0`)]') | json_query('[0].ipaddr') | regex_replace('^(.*)$', '\\1/24') | ipaddr('subnet') }}"
+ipaddr_subnet_priv1: "{{ os_host__hostname_ipaddr | json_query(json_query_str_priv1) | json_query('[0].ipaddr') | regex_replace('^(.*)$', '\\1/24') | ipaddr('subnet') }}"
+ipaddr_subnet_priv2: "{{ os_host__hostname_ipaddr | json_query(json_query_str_priv2) | json_query('[0].ipaddr') | regex_replace('^(.*)$', '\\1/24') | ipaddr('subnet') }}"
+
+node1_primary_hostname: "{{ os_host__hostname_ipaddr | json_query('[?(node_id==`1` && nic_name==`bond0`)]') | json_query('[0].hostname') }}"
+node1_primary_ipaddr: "{{ os_host__hostname_ipaddr | json_query('[?(node_id==`1` && nic_name==`bond0`)]') | json_query('[0].ipaddr') }}"
+
+node1_vip_hostname: "{{ os_host__hostname_ipaddr | json_query('[?(node_id==`1` && category==`vip`)]') | json_query('[0].hostname') }}"
+node1_vip_ipaddr: "{{ os_host__hostname_ipaddr | json_query('[?(node_id==`1` && category==`vip`)]') | json_query('[0].ipaddr') }}"
+
+node1_private_1_hostname: "{{ os_host__hostname_ipaddr | json_query('[?(node_id==`1` && category==`private1`)]') | json_query('[0].hostname') }}"
+node1_private_1_ipaddr: "{{ os_host__hostname_ipaddr | json_query('[?(node_id==`1` && category==`private1`)]') | json_query('[0].ipaddr') }}"
+
+node1_private_2_hostname: "{{ os_host__hostname_ipaddr | json_query('[?(node_id==`1` && category==`private2`)]') | json_query('[0].hostname') }}"
+node1_private_2_ipaddr: "{{ os_host__hostname_ipaddr | json_query('[?(node_id==`1` && category==`private2`)]') | json_query('[0].ipaddr') }}"
+
+node2_primary_hostname: "{{ os_host__hostname_ipaddr | json_query('[?(node_id==`2` && nic_name==`bond0`)]') | json_query('[0].hostname') }}"
+node2_primary_ipaddr: "{{ os_host__hostname_ipaddr | json_query('[?(node_id==`2` && nic_name==`bond0`)]') | json_query('[0].ipaddr') }}"
+
+node2_vip_hostname: "{{ os_host__hostname_ipaddr | json_query('[?(node_id==`2` && category==`vip`)]') | json_query('[0].hostname') }}"
+node2_vip_ipaddr: "{{ os_host__hostname_ipaddr | json_query('[?(node_id==`2` && category==`vip`)]') | json_query('[0].ipaddr') }}"
+
+node2_private_1_hostname: "{{ os_host__hostname_ipaddr | json_query('[?(node_id==`2` && category==`private1`)]') | json_query('[0].hostname') }}"
+node2_private_1_ipaddr: "{{ os_host__hostname_ipaddr | json_query('[?(node_id==`2` && category==`private1`)]') | json_query('[0].ipaddr') }}"
+
+node2_private_2_hostname: "{{ os_host__hostname_ipaddr | json_query('[?(node_id==`2` && category==`private2`)]') | json_query('[0].hostname') }}"
+node2_private_2_ipaddr: "{{ os_host__hostname_ipaddr | json_query('[?(node_id==`2` && category==`private2`)]') | json_query('[0].ipaddr') }}"
+
 
 # ===================== [os_yum.yml]
 
@@ -581,5 +683,15 @@ oracle_upload_install_media__file_install_media_patch_34518661: "{{ dir__ansible
 oracle_upload_install_media__file_install_media_patch_list:
   - "{{ oracle_upload_install_media__file_install_media_patch_6880880 }}"
   - "{{ oracle_upload_install_media__file_install_media_patch_34518661 }}"
+
+# ===================== [oracle_software_grid.yml]
+
+oracle_software__responsefile_grid: "{{ dir__oracle_upload_response_file }}/oracle_19c_grid_install.rsp"
+oracle_software__responsefile_oracle: "{{ dir__oracle_upload_response_file }}/oracle_19c_oracle_install.rsp"
+oracle_software__responsefile_dbca: "{{ dir__oracle_upload_response_file }}/oracle_19c_oracle_dbca.rsp"
+oracle_software__dbt_dbca: "{{ dir__oracle_upload_response_file }}/oracle_19c_oracle_dbca.dbt"
+
+oracle_software__sqlfile__grid_diskgroup_create: "{{ dir__oracle_upload_sql_file }}/diskgroup_create.sql"
+oracle_software__sqlfile__grid_diskgroup_mount: "{{ dir__oracle_upload_sql_file }}/diskgroup_mount.sql"
 
 # ===================== [python.yml]

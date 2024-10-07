@@ -9,6 +9,7 @@
 - name: "[os_selinux.yml] template setenforce"
   shell: |
     setenforce 0
+  ignore_errors: yes
 
 - name: "[os_selinux.yml] status / check"
   shell: |

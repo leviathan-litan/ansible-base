@@ -1,0 +1,74 @@
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Oracle database 19c RAC / DB 数据库 / 软件安装响应文件
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+oracle.install.responseFileVersion=/oracle/install/rspfmt_dbinstall_response_schema_v19.0.0
+oracle.install.option=INSTALL_DB_SWONLY
+
+# 安装时自动执行 root 脚本
+oracle.install.db.rootconfig.executeRootScript=true
+oracle.install.db.rootconfig.configMethod=ROOT
+oracle.install.db.rootconfig.sudoPath=
+oracle.install.db.rootconfig.sudoUserName=
+
+# 环境变量
+UNIX_GROUP_NAME=oinstall
+INVENTORY_LOCATION=/u01/app/oraInventory
+ORACLE_BASE=/u01/app/oracle
+
+# 集群节点
+oracle.install.db.CLUSTER_NODES={{ node1_primary_hostname }},{{ node2_primary_hostname }}
+
+# 数据库软件类型：
+# EE：企业版
+oracle.install.db.InstallEdition=EE
+
+# 数据库相关用户组
+oracle.install.db.OSDBA_GROUP=dba
+oracle.install.db.OSOPER_GROUP=
+oracle.install.db.OSBACKUPDBA_GROUP=dba
+oracle.install.db.OSDGDBA_GROUP=dba
+oracle.install.db.OSKMDBA_GROUP=dba
+oracle.install.db.OSRACDBA_GROUP=dba
+
+# ASM
+oracle.install.db.config.asm.diskGroup=
+oracle.install.db.config.asm.ASMSNMPPassword=
+
+# PDB
+oracle.install.db.ConfigureAsContainerDB=false
+oracle.install.db.config.PDBName=
+
+# 实例
+# -- 基础信息
+oracle.install.db.config.starterdb.type=GENERAL_PURPOSE
+oracle.install.db.config.starterdb.globalDBName=
+oracle.install.db.config.starterdb.SID=
+oracle.install.db.config.starterdb.characterSet=
+
+# -- 口令
+oracle.install.db.config.starterdb.password.ALL=
+oracle.install.db.config.starterdb.password.SYS=
+oracle.install.db.config.starterdb.password.SYSTEM=
+oracle.install.db.config.starterdb.password.DBSNMP=
+oracle.install.db.config.starterdb.password.PDBADMIN=
+
+# -- 样例数据
+oracle.install.db.config.starterdb.installExampleSchemas=false
+
+# -- 其他配置
+oracle.install.db.config.starterdb.managementOption=DEFAULT
+oracle.install.db.config.starterdb.enableRecovery=false
+oracle.install.db.config.starterdb.storageType=
+
+oracle.install.db.config.starterdb.memoryOption=false
+oracle.install.db.config.starterdb.memoryLimit=
+
+oracle.install.db.config.starterdb.omsHost=
+oracle.install.db.config.starterdb.omsPort=0
+
+oracle.install.db.config.starterdb.emAdminUser=
+oracle.install.db.config.starterdb.emAdminPassword=
+
+oracle.install.db.config.starterdb.fileSystemStorage.dataLocation=
+oracle.install.db.config.starterdb.fileSystemStorage.recoveryLocation=

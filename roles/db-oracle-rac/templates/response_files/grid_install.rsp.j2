@@ -1,0 +1,95 @@
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Oracle database 19c RAC / Grid 集群件 / 软件安装响应文件
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+oracle.install.responseFileVersion=/oracle/install/rspfmt_crsinstall_response_schema_v19.0.0
+oracle.install.option=CRS_CONFIG
+
+oracle.install.config.managementOption=NONE
+oracle.install.config.omsHost=
+oracle.install.config.omsPort=0
+oracle.install.config.emAdminUser=
+oracle.install.config.emAdminPassword=
+
+oracle.install.crs.rootconfig.executeRootScript=true
+oracle.install.crs.rootconfig.configMethod=ROOT
+oracle.install.crs.rootconfig.sudoPath=
+oracle.install.crs.rootconfig.sudoUserName=
+
+# 环境变量
+INVENTORY_LOCATION={{ dir__oracle_inventory }}
+ORACLE_BASE={{ dir__grid_base }}
+
+# 用户 与 组
+oracle.install.asm.OSDBA=asmdba
+oracle.install.asm.OSOPER=
+oracle.install.asm.OSASM=asmadmin
+
+# ASM 口令
+oracle.install.asm.SYSASMPassword=oracle
+oracle.install.asm.monitorPassword=oracle
+
+# CRS
+oracle.install.crs.config.batchinfo=
+oracle.install.crs.config.ignoreDownNodes=false  
+oracle.install.crs.configureRHPS=false
+oracle.install.crs.configureGIMR=false
+
+oracle.install.crs.config.storageOption=FLEX_ASM_STORAGE
+oracle.install.crs.config.sharedFileSystemStorage.votingDiskLocations=
+oracle.install.crs.config.sharedFileSystemStorage.ocrLocations=
+
+oracle.install.crs.config.clusterName={{ cluster_name }}
+oracle.install.crs.config.ClusterConfiguration=STANDALONE
+oracle.install.crs.config.configureAsExtendedCluster=false
+oracle.install.crs.config.memberClusterManifestFile=
+
+oracle.install.crs.config.sites=
+oracle.install.crs.config.clusterNodes={{ node1_primary_hostname }}:{{ node1_vip_hostname }},{{ node2_primary_hostname }}:{{ node2_vip_hostname }}
+oracle.install.crs.config.networkInterfaceList=bond0:{{ ipaddr_subnet_bond0.split('/')[0] }}:1,{{ node1_private_1_hostname }}:{{ ipaddr_subnet_priv1.split('/')[0] }}:5,{{ node1_private_2_hostname }}:{{ ipaddr_subnet_priv2.split('/')[0] }}:5
+
+oracle.install.crs.config.autoConfigureClusterNodeVIP=false
+
+oracle.install.crs.app.applicationAddress=
+oracle.install.crs.deleteNode.nodes=
+
+# SCAN
+oracle.install.crs.config.gpnp.scanName={{ scan_network_name }}
+oracle.install.crs.config.gpnp.scanPort=1521
+oracle.install.crs.config.scanType=LOCAL_SCAN
+oracle.install.crs.config.SCANClientDataFile=
+
+# GNS
+oracle.install.crs.config.gpnp.configureGNS=false
+oracle.install.crs.config.gpnp.gnsOption=
+oracle.install.crs.config.gpnp.gnsClientDataFile=
+oracle.install.crs.config.gpnp.gnsSubDomain=
+oracle.install.crs.config.gpnp.gnsVIPAddress=
+
+# IPMI
+oracle.install.crs.config.useIPMI=false
+oracle.install.crs.config.ipmi.bmcUsername=
+oracle.install.crs.config.ipmi.bmcPassword=
+
+# ASM
+oracle.install.asm.configureGIMRDataDG=false
+oracle.install.asm.configureAFD=false
+
+# GIMR DG
+oracle.install.asm.gimrDG.name=
+oracle.install.asm.gimrDG.redundancy=
+oracle.install.asm.gimrDG.AUSize=1
+oracle.install.asm.gimrDG.FailureGroups=
+oracle.install.asm.gimrDG.disksWithFailureGroupNames=
+oracle.install.asm.gimrDG.disks=
+oracle.install.asm.gimrDG.quorumFailureGroupNames=
+
+# ASM DiskGroup
+oracle.install.asm.diskGroup.name=ocr
+oracle.install.asm.diskGroup.redundancy=NORMAL
+oracle.install.asm.diskGroup.AUSize=4
+oracle.install.asm.diskGroup.FailureGroups=
+oracle.install.asm.diskGroup.quorumFailureGroupNames=
+oracle.install.asm.diskGroup.disksWithFailureGroupNames=
+oracle.install.asm.diskGroup.disks={{ asm_diskgroup_ocr_disks }}
+oracle.install.asm.diskGroup.diskDiscoveryString=/dev/mapper/asm*
