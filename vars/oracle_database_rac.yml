@@ -360,7 +360,7 @@ os_host__hostname_ipaddr:
     node_id: 2
   - hostname: "{{ node2_hostname_public }}-priv-2"
     nic_name: "ens256"
-    category: "private"
+    category: "private2"
     ipaddr: "192.168.4.20"
     node_id: 2
   # --- other
@@ -671,6 +671,10 @@ os_fdisk__mount_point: "{{ dir__oracle_base_dir__mountpoint }}"
 os_fdisk__mount_point_owner: "oracle"
 os_fdisk__mount_point_group: "oinstall"
 os_fdisk__mount_point_mode: "0777"
+
+# %%%%%%%%%%%%%%%%%%%%
+# [db-oracle-rac] 变量
+# %%%%%%%%%%%%%%%%%%%%
 
 # ===================== [oracle_upload_install_media.yml]
 
