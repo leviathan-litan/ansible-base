@@ -9,3 +9,7 @@
 - import_tasks: oracle_software_db.yml
   when:
     - oracle_software_db_enabled
+
+- import_tasks: oracle_db_instance.yml
+  when:
+    - oracle_db_instance_enabled

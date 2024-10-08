@@ -1,0 +1,13 @@
+{% if var__grid_diskgroup_data is defined %}
+create diskgroup data external redundancy disk {{ var__grid_diskgroup_data | map('regex_replace', '^(.*)$','\'/dev/mapper/\\1\'') | list | join(',') }} attribute 'au_size'='4M','compatible.asm'='19.0';
+{% endif %}
+
+{% if var__grid_diskgroup_redo is defined %}
+create diskgroup redo external redundancy disk {{ var__grid_diskgroup_redo | map('regex_replace', '^(.*)$','\'/dev/mapper/\\1\'') | list | join(',') }} attribute 'au_size'='4M','compatible.asm'='19.0';
+{% endif %}
+
+{% if var__grid_diskgroup_fra is defined %}
+create diskgroup arch external redundancy disk {{ var__grid_diskgroup_fra | map('regex_replace', '^(.*)$','\'/dev/mapper/\\1\'') | list | join(',') }} attribute 'au_size'='4M','compatible.asm'='19.0';
+{% endif %}
+
+exit;

@@ -88,61 +88,64 @@ dir__grid_home: "{{ dir__oracle_base }}/19/grid_home"
 # ===================== Task Switch
 
 # OS User and Group
-os_user_and_group_enabled: yes
+os_user_and_group_enabled: no
 
 # OS Directory
-os_directory_enabled: yes
+os_directory_enabled: no
 
 # OS Hosts
-os_host_enabled: yes
+os_host_enabled: no
 
 # OS Network
-os_network_enabled: yes
-os_network_connections_refresh_and_config_enabled: yes
+os_network_enabled: no
+os_network_connections_refresh_and_config_enabled: no
 
 # OS SSH Connectivity
-os_ssh_connectivity_enabled: yes
+os_ssh_connectivity_enabled: no
 
 # OS YUM
 os_yum_enabled: no
 
 # OS Linux Service
-os_service_enabled: yes
+os_service_enabled: no
 
 # OS Linux SELinux
-os_selinux_enabled: yes
+os_selinux_enabled: no
 
 # OS Linux Time
 os_time_enabled: no
 os_time__ntp_enabled: no
 
 # OS Grub
-os_grub_enabled: yes
+os_grub_enabled: no
 
 # OS Linux Kernel Parameters
-os_kernel_parameters_enabled: yes
+os_kernel_parameters_enabled: no
 
 # OS / Storage / fdisk
 os_fdisk_enabled: no
 
 # OS/ Storage / iSCSI discovery
-os_iscsi_discovery_enabled: yes
+os_iscsi_discovery_enabled: no
 
 # OS / Storage / Multipath
-os_multipath_enabled: yes
-os_multipath_storage_dd_if_enabled: yes
+os_multipath_enabled: no
+os_multipath_storage_dd_if_enabled: no
 
 # Python
-python_enabled: yes
+python_enabled: no
 
 # Oracle / install media / upload
-oracle_upload_install_media_enabled: yes
+oracle_upload_install_media_enabled: no
 
-# Oracle/ grid / install
-oracle_software_grid_enabled: yes
+# Oracle / grid / install
+oracle_software_grid_enabled: no
 
-# Oracle/ db / install
+# Oracle / db / install
 oracle_software_db_enabled: yes
+
+# Oracle / db / instance
+oracle_db_instance_enabled: yes
 
 # ===================== [os_user_and_group.yml]
 
@@ -693,10 +696,16 @@ oracle_upload_install_media__file_install_media_patch_list:
 
 oracle_software__responsefile_grid: "{{ dir__oracle_upload_response_file }}/oracle_19c_grid_install.rsp"
 oracle_software__responsefile_oracle: "{{ dir__oracle_upload_response_file }}/oracle_19c_oracle_install.rsp"
+
 oracle_software__responsefile_dbca: "{{ dir__oracle_upload_response_file }}/oracle_19c_oracle_dbca.rsp"
-oracle_software__dbt_dbca: "{{ dir__oracle_upload_response_file }}/oracle_19c_oracle_dbca.dbt"
+oracle_software__dbtfile_dbca: "{{ dir__oracle_upload_response_file }}/oracle_19c_oracle_dbca.dbt"
 
 oracle_software__sqlfile__grid_diskgroup_create: "{{ dir__oracle_upload_sql_file }}/diskgroup_create.sql"
 oracle_software__sqlfile__grid_diskgroup_mount: "{{ dir__oracle_upload_sql_file }}/diskgroup_mount.sql"
+
+oracle_software__shellfile__grid_diskgroup_create: "{{ dir__oracle_upload_sql_file }}/diskgroup_create.sh"
+oracle_software__shellfile__grid_diskgroup_mount: "{{ dir__oracle_upload_sql_file }}/diskgroup_mount.sh"
+
+# ===================== [oracle_db_instance.yml]
 
 # ===================== [python.yml]

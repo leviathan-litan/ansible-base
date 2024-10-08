@@ -17,14 +17,14 @@
   shell: |
     mv {{ dir__oracle_home }}/OPatch {{ dir__oracle_home }}/OPatch_{{ linux_command_date.stdout }}
   become: yes
-  become_user: db
+  become_user: oracle
   when: linux_command__db_opatch_backup_check.stat.exists
 
 - name: "[oracle_software_db.yml] DB Home/ OPatch / new install"
   shell: |
     cp -rf {{ dir__oracle_upload_oracle_installmedia_patch_6880880_unziped }} {{ dir__oracle_home }}
   become: yes
-  become_user: db
+  become_user: oracle
   when: linux_command__db_opatch_backup_check.stat.exists
 
 - name: "[oracle_software_db.yml] DB / Response File"

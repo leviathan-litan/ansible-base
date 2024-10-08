@@ -1,0 +1,5 @@
+{% for asm_diskgroup_item in linux_command_result__oracle_asm_diskgroups.stdout_lines %}
+alter diskgroup {{ asm_diskgroup_item }} mount;
+{% endfor %}
+
+exit;

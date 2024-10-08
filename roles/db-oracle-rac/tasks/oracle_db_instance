@@ -1,0 +1,85 @@
+# ===================== 处理磁盘组
+
+- name: "[oracle_db_instance.yml] sql file / diskgroup / create"
+  template:
+    backup: yes
+    owner: grid
+    group: oinstall
+    mode: 0755
+    src: "sql_files/diskgroup_create.sql.j2"
+    dest: "{{ oracle_software__sqlfile__grid_diskgroup_create }}"
+  become: yes
+  become_user: root
+  become_method: sudo
+
+- name: "[oracle_db_instance.yml] sql file / diskgroup / check"
+  shell: |
+    cat {{ oracle_software__sqlfile__grid_diskgroup_create }} | awk '{print $3}' | strings
+  register: linux_command_result__oracle_asm_diskgroups
+  become: yes
+  become_user: root
+  become_method: sudo
+
+- name: "[oracle_db_instance.yml] sql file / diskgroup / mount"
+  template:
+    backup: yes
+    owner: grid
+    group: oinstall
+    mode: 0755
+    src: "sql_files/diskgroup_mount.sql.j2"
+    dest: "{{ oracle_software__sqlfile__grid_diskgroup_mount }}"
+  become: yes
+  become_user: root
+  become_method: sudo
+
+- name: "[oracle_db_instance.yml] shell file / diskgroup / create"
+  template:
+    backup: yes
+    owner: grid
+    group: oinstall
+    mode: 0755
+    src: "sql_files/diskgroup_create.sh.j2"
+    dest: "{{ oracle_software__shellfile__grid_diskgroup_create }}"
+  become: yes
+  become_user: root
+  become_method: sudo
+
+- name: "[oracle_db_instance.yml] shell file / diskgroup / mount"
+  template:
+    backup: yes
+    owner: grid
+    group: oinstall
+    mode: 0755
+    src: "sql_files/diskgroup_mount.sh.j2"
+    dest: "{{ oracle_software__shellfile__grid_diskgroup_mount }}"
+  become: yes
+  become_user: root
+  become_method: sudo
+
+- name: "[oracle_db_instance.yml] shell file / diskgroup / create / execute"
+  shell: |
+    sh {{ oracle_software__shellfile__grid_diskgroup_create }}
+  become: yes
+  become_user: root
+  become_method: sudo
+  when: node_id == 1
+
+- name: "[oracle_db_instance.yml] shell file / diskgroup / mount / execute"
+  shell: |
+    sh {{ oracle_software__shellfile__grid_diskgroup_mount }}
+  become: yes
+  become_user: root
+  become_method: sudo
+  when: node_id == 2
+
+# ===================== 动态参数计算
+
+- name: "动态计算 / SGA - 获取"
+  shell: "echo \"$(grep -i memtotal /proc/meminfo | awk '{print $2}') /1024 /2 * 0.8\" | bc | cut -d'.' -f1"
+  register: linux_command_oracle_param__sga_target_mb
+
+- name: "动态计算 / PGA - 获取"
+  shell: "echo \"$(grep -i memtotal /proc/meminfo | awk '{print $2}') /1024 /2 * 0.2\" | bc | cut -d'.' -f1"
+  register: linux_command_oracle_param__pga_target_mb
+
+# ===================== 实例创建【模板文件】
