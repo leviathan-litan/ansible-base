@@ -28,6 +28,18 @@ os_ssh_connectivity_enabled: yes
 # OS YUM
 os_yum_enabled: yes
 
+# --- 自定义 YUM缓存
+os_yum_repodata_custom_enabled: no
+
+# --- 需要提前将正确的光盘连入系统
+os_yum_repodata_local_iso_enabled: yes
+
+# --- 局域网
+os_yum_repodata_local_network_enabled: no
+
+# --- 公网
+os_yum_repodata_public_network_enabled: no
+
 # OS Linux Service
 os_service_enabled: yes
 
@@ -439,26 +451,35 @@ node2_private_1_ipaddr: "{{ os_host__hostname_ipaddr | json_query('[?(node_id==`
 node2_private_2_hostname: "{{ os_host__hostname_ipaddr | json_query('[?(node_id==`2` && category==`private2`)]') | json_query('[0].hostname') }}"
 node2_private_2_ipaddr: "{{ os_host__hostname_ipaddr | json_query('[?(node_id==`2` && category==`private2`)]') | json_query('[0].ipaddr') }}"
 
-
 # ===================== [os_yum.yml]
 
-os_yum__rpm_list:
-  - file: "rpm/compat-libstdc++-33-3.2.3-72.el7.x86_64.rpm"
-    name: "compat-libstdc++-33-3.2.3-72.el7.x86_64.rpm"
-  - file: "rpm/cvuqdisk-1.0.10-1.rpm"
-    name: "cvuqdisk-1.0.10-1.rpm"
+# )))))) 自定义缓存
+os_yum__file__repodata: "yum__oracle_db_19c_rac.zip"
 
-os_yum__repofile_list:
-  # --- local
-  # - file: "yum_repofile/local.repo.j2"
-  #   name: "local.repo"
+os_yum__repofile_list_repodata_custom:
+  - file: "yum_repofile/local/os_yum_repodata_custom.repo.j2"
+    name: "local.repo"
+
+# )))))) 本地 ISO
+
+os_yum__repofile_list_local_iso:
+  - file: "yum_repofile/local/os_yum_repodata_local_iso_rhel8.repo.j2"
+    name: "local.repo"
+
+# )))))) 局域网络
+
+os_yum__repofile_list_local_network:
+  - file: "yum_repofile/local/os_yum_repodata_local_network_rhel7.repo.j2"
+    name: "local.repo"
+
+# )))))) 公共网络
+
+os_yum__repofile_list_public_network:
   # --- centos 7
-  # - file: "yum_repofile/centos7/centos-7-local.repo"
-  #   name: "local.repo"
   # - file: "yum_repofile/centos7/centos-7.repo"
-  #   name: "local.repo"
+  #   name: "centos-7.repo"
   # - file: "yum_repofile/centos7/epel-7.repo"
-  #   name: "local.repo"
+  #   name: "epel-7.repo"
   # --- centos 8
   - file: "yum_repofile/centos8/centos-8.5.2111.repo"
     name: "centos-8.5.2111.repo"
@@ -472,6 +493,14 @@ os_yum__repofile_list:
     name: "epel-testing.repo"
   - file: "yum_repofile/centos8/epel.repo"
     name: "epel.repo"
+
+# )))))) 软件安装列表
+
+os_yum__rpm_list:
+  - file: "rpm/compat-libstdc++-33-3.2.3-72.el7.x86_64.rpm"
+    name: "compat-libstdc++-33-3.2.3-72.el7.x86_64.rpm"
+  - file: "rpm/cvuqdisk-1.0.10-1.rpm"
+    name: "cvuqdisk-1.0.10-1.rpm"
 
 os_yum__install_list:
   - bc

@@ -1,0 +1,28 @@
+- name: "[os_yum_repodata_local_iso.yml] create mount point /iso_me"
+  file:
+    state: directory
+    owner: "root"
+    group: "root"
+    mode: "0755"
+    path: "/iso_me"
+
+- name: "[os_yum_repodata_local_iso.yml] /etc/fstab add record"
+  lineinfile:
+    line: "/dev/cdrom /iso_me iso9660 defaults 0 0"
+    state: present
+    path: /etc/fstab
+
+- name: "[os_yum_repodata_local_iso.yml] mount and check"
+  shell: |
+    mount -a && df -h
+
+- name: "YUM源配置 / 本地 ISO"
+  template:
+    backup: yes
+    owner: root
+    group: root
+    mode: 0755
+    src: "{{ item.file }}"
+    dest: "/etc/yum.repos.d/{{ item.name }}"
+  with_items: 
+   - "{{ os_yum__repofile_list_local_iso }}"

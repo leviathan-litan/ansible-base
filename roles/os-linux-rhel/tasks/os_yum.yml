@@ -19,7 +19,7 @@
    - "{{ os_yum__rpm_list }}"
   ignore_errors: yes
 
-# ===================== YUM
+# ===================== YUM 打开本地缓存
 
 - name: "[os_yum.yml] yum.conf / keepcache enable"
   lineinfile:
@@ -29,33 +29,42 @@
     regexp: '^keepcache'
     line: 'keepcache=1'
 
-# - name: "[os_yum.yml] YUM / repodata / upload"
-#   unarchive:
-#     owner: root
-#     group: root
-#     mode: 0755
-#     src: "yum_repodata/yum.zip"
-#     dest: "{{ dir__oracle_upload_yum_repodata }}"
-
-# - name: "[os_yum.yml] YUM / repodata / createrepo"
-#   shell: |
-#     createrepo {{ dir__oracle_upload_yum_repodata }}
+# ===================== YUM / repofile / 备份
 
 - name: "[os_yum.yml] YUM / repofile / copy"
   shell: |
     cp /etc/yum.repos.d/*.repo {{ dir__oracle_upload_yum_repofile }}
   ignore_errors: yes
 
-- name: "[os_yum.yml] YUM / repofile / upload"
-  template:
-    backup: yes
-    owner: root
-    group: root
-    mode: 0755
-    src: "{{ item.file }}"
-    dest: "/etc/yum.repos.d/{{ item.name }}"
-  with_items: 
-   - "{{ os_yum__repofile_list }}"
+# ===================== YUM / repodata / 自定义缓存数据
+
+- name: "[os_yum.yml] repodata / 自定义缓存数据"
+  include_tasks: "os_yum_repodata_custom.yml"
+  when:
+    - os_yum_repodata_custom_enabled
+
+# ===================== YUM / repodata / 本地 ISO
+
+- name: "[os_yum.yml] repodata / 本地 ISO"
+  include_tasks: "os_yum_repodata_local_iso.yml"
+  when:
+    - os_yum_repodata_local_iso_enabled
+
+# ===================== YUM / repodata / 局域网络
+
+- name: "[os_yum.yml] repodata / 局域网络"
+  include_tasks: "os_yum_repodata_local_network.yml"
+  when:
+    - os_yum_repodata_local_network_enabled
+
+# ===================== YUM / repodata / 公共网络
+
+- name: "[os_yum.yml] repodata / 公共网络"
+  include_tasks: "os_yum_repodata_public_network.yml"
+  when:
+    - os_yum_repodata_public_network_enabled
+
+# ===================== YUM / repodata / makecache
 
 - name: "[os_yum.yml] YUM / makecache"
   shell: |

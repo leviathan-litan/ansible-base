@@ -1,0 +1,22 @@
+- name: "[os_yum.yml] YUM / repodata / upload"
+  unarchive:
+    owner: root
+    group: root
+    mode: 0755
+    src: "yum_repodata/{{ os_yum__file__repodata }}"
+    dest: "{{ dir__oracle_upload_yum_repodata }}"
+
+- name: "[os_yum.yml] YUM / repodata / createrepo"
+  shell: |
+    createrepo {{ dir__oracle_upload_yum_repodata }}
+
+- name: "YUM源配置 / 自定义缓存"
+  template:
+    backup: yes
+    owner: root
+    group: root
+    mode: 0755
+    src: "{{ item.file }}"
+    dest: "/etc/yum.repos.d/{{ item.name }}"
+  with_items: 
+   - "{{ os_yum__repofile_list_repodata_custom }}"

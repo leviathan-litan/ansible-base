@@ -1,0 +1,10 @@
+- name: "YUM源配置 / 公共网络"
+  template:
+    backup: yes
+    owner: root
+    group: root
+    mode: 0755
+    src: "{{ item.file }}"
+    dest: "/etc/yum.repos.d/{{ item.name }}"
+  with_items: 
+   - "{{ os_yum__repofile_list_public_network }}"
