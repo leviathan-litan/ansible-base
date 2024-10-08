@@ -79,7 +79,7 @@ dir__oracle_base: "{{ dir__oracle_base_dir }}/oracle"
 dir__oracle_home: "{{ dir__oracle_base }}/product/19"
 
 dir__grid_base: "{{ dir__oracle_base_dir }}/grid_base"
-dir__grid_home: "{{ dir__oracle_base }}/19/grid_home"
+dir__grid_home: "{{ dir__grid_base }}/19/grid_home"
 
 # %%%%%%%%%%%%%%%%%%%%
 # [os-linux-rhel] 变量
