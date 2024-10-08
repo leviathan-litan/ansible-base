@@ -64,7 +64,19 @@
     - "{{ os_user_and_group__user | map(attribute='username') | list }}"
     - "{{ os_host__hostname_ipaddr | json_query('[?(nic_name==`bond0`)]') | list | map(attribute='ipaddr') | list }}"
 
-- name: "[os_ssh_connectivity.yml] 测试验证"
+- name: "[os_ssh_connectivity.yml] 测试验证 / 主机名"
+  expect:
+    command: |
+      ssh {{ item[1] }} hostname
+    responses:
+      Are you sure you want to continue connecting (yes/no/[fingerprint])? : "yes"
+  become: yes
+  become_user: "{{ item[0] }}"
+  with_nested:
+    - "{{ os_user_and_group__user | map(attribute='username') | list }}"
+    - "{{ os_host__hostname_ipaddr | json_query('[?(nic_name==`bond0`)]') | list | map(attribute='hostname') | list }}"
+
+- name: "[os_ssh_connectivity.yml] 测试验证 / IP地址"
   expect:
     command: |
       ssh {{ item[1] }} hostname
