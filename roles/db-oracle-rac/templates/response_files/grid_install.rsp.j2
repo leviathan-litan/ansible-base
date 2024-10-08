@@ -46,7 +46,7 @@ oracle.install.crs.config.memberClusterManifestFile=
 
 oracle.install.crs.config.sites=
 oracle.install.crs.config.clusterNodes={{ node1_primary_hostname }}:{{ node1_vip_hostname }},{{ node2_primary_hostname }}:{{ node2_vip_hostname }}
-oracle.install.crs.config.networkInterfaceList=bond0:{{ ipaddr_subnet_bond0.split('/')[0] }}:1,{{ node1_private_1_hostname }}:{{ ipaddr_subnet_priv1.split('/')[0] }}:5,{{ node1_private_2_hostname }}:{{ ipaddr_subnet_priv2.split('/')[0] }}:5
+oracle.install.crs.config.networkInterfaceList=bond0:{{ ipaddr_subnet_bond0.split('/')[0] }}:1,{{ nic_name_priv1 }}:{{ ipaddr_subnet_priv1.split('/')[0] }}:5,{{ nic_name_priv2 }}:{{ ipaddr_subnet_priv2.split('/')[0] }}:5
 
 oracle.install.crs.config.autoConfigureClusterNodeVIP=false
 
