@@ -72,14 +72,14 @@ dir__oracle_upload_python_pexpect_unziped: "{{ dir__oracle_upload_base }}/pexpec
 # --- 运行相关
 dir__oracle_base_dir__mountpoint: "/u01"
 dir__oracle_base_dir: "{{ dir__oracle_base_dir__mountpoint }}/app"
-
-dir__oracle_inventory: "{{ dir__oracle_base_dir }}/oraInventory"
-
 dir__oracle_base: "{{ dir__oracle_base_dir }}/oracle"
+
+dir__oracle_inventory: "{{ dir__oracle_base }}/oraInventory"
+
 dir__oracle_home: "{{ dir__oracle_base }}/product/19"
 
-dir__grid_base: "{{ dir__oracle_base_dir }}/grid_base"
-dir__grid_home: "{{ dir__grid_base }}/19/grid_home"
+dir__grid_base: "{{ dir__oracle_base }}/grid_base"
+dir__grid_home: "{{ dir__oracle_base }}/19/grid_home"
 
 # %%%%%%%%%%%%%%%%%%%%
 # [os-linux-rhel] 变量
