@@ -1,0 +1,35 @@
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Oracle database 19c RAC / 数据库 / 建库
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+responseFileVersion=/oracle/assistants/rspfmt_dbca_response_schema_v19.0.0
+templateName={{ oracle_software__dbtfile_dbca }}
+
+gdbName={{ oracle_sid }}
+sid={{ oracle_sid }}
+
+sysPassword=oracle
+systemPassword=oracle
+
+nodelist={{ node1_primary_hostname }},{{ node2_primary_hostname }}
+
+databaseConfigType=RAC
+databaseType=MULTIPURPOSE
+policyManaged=false
+automaticMemoryManagement=false
+
+initParams=sga_target={{ linux_command_oracle_param__sga_target_mb.stdout }}MB,pga_aggregate_target={{ linux_command_oracle_param__pga_target_mb.stdout }}MB,db_recovery_file_dest_size=40000MB,audit_trail=none,recyclebin=off
+
+listeners=LISTENER
+
+characterSet={{ characterSet }}
+nationalCharacterSet={{ nationalCharacterSet }}
+
+createServerPool=false
+createAsContainerDatabase=false
+
+storageType=ASM
+
+recoveryAreaDestination=+ARCH
+datafileDestination=+DATA/{DB_UNIQUE_NAME}/
+# diskGroupName=+DATA

@@ -1,0 +1,3 @@
+{% for sql_file_item in oracle_db_instance__post_install__sqlfile_list %}
+su - oracle -c 'sqlplus -s / as sysdba @{{ dir__oracle_upload_sql_file }}/{{ sql_file_item }}'
+{% endfor %}

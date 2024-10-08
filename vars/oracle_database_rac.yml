@@ -1,18 +1,85 @@
 # %%%%%%%%%%%%%%%%%%%%
-# Ansible / 变量
+# Ansible / 变量文件: oracle_database_rac.yml
 # %%%%%%%%%%%%%%%%%%%%
 # deploy_hosts: "db-oracle-rac"
+
+# %%%%%%%%%%%%%%%%%%%%
+# 全局任务「开关」
+# %%%%%%%%%%%%%%%%%%%%
+
+# ===================== Task Switch
+
+# OS User and Group
+os_user_and_group_enabled: yes
+
+# OS Directory
+os_directory_enabled: yes
+
+# OS Hosts
+os_host_enabled: yes
+
+# OS Network
+os_network_enabled: yes
+os_network_connections_refresh_and_config_enabled: yes
+
+# OS SSH Connectivity
+os_ssh_connectivity_enabled: yes
+
+# OS YUM
+os_yum_enabled: yes
+
+# OS Linux Service
+os_service_enabled: yes
+
+# OS Linux SELinux
+os_selinux_enabled: yes
+
+# OS Linux Time
+os_time_enabled: yes
+os_time__ntp_enabled: no
+
+# OS Grub
+os_grub_enabled: yes
+
+# OS Linux Kernel Parameters
+os_kernel_parameters_enabled: yes
+
+# OS / Storage / fdisk
+os_fdisk_enabled: yes
+
+# OS/ Storage / iSCSI discovery
+os_iscsi_discovery_enabled: yes
+
+# OS / Storage / Multipath
+os_multipath_enabled: yes
+os_multipath_storage_dd_if_enabled: yes
+
+# Python
+python_enabled: yes
+
+# Oracle / install media / upload
+oracle_upload_install_media_enabled: yes
+
+# Oracle / grid / install
+oracle_software_grid_enabled: yes
+
+# Oracle / db / install
+oracle_software_db_enabled: yes
+
+# Oracle / db / instance
+oracle_db_instance_enabled: yes
 
 # %%%%%%%%%%%%%%%%%%%%
 # Oracle Database 19c RAC / 变量
 # %%%%%%%%%%%%%%%%%%%%
 
+# 操作系统「root」口令
 linux_root_password: "oracle"
 
 # ===================== Database / 数据库
 
 # 实例名
-oracle_sid: "mes"
+oracle_sid: "orcl"
 
 # 字符集
 characterSet: "AL32UTF8"
@@ -72,80 +139,18 @@ dir__oracle_upload_python_pexpect_unziped: "{{ dir__oracle_upload_base }}/pexpec
 # --- 运行相关
 dir__oracle_base_dir__mountpoint: "/u01"
 dir__oracle_base_dir: "{{ dir__oracle_base_dir__mountpoint }}/app"
+
 dir__oracle_base: "{{ dir__oracle_base_dir }}/oracle"
-
-dir__oracle_inventory: "{{ dir__oracle_base }}/oraInventory"
-
 dir__oracle_home: "{{ dir__oracle_base }}/product/19"
 
-dir__grid_base: "{{ dir__oracle_base }}/grid_base"
-dir__grid_home: "{{ dir__oracle_base }}/19/grid_home"
+dir__grid_base: "{{ dir__oracle_base_dir }}/grid_base"
+dir__grid_home: "{{ dir__oracle_base_dir }}/19/grid_home"
+
+dir__oracle_inventory: "{{ dir__oracle_base }}/oraInventory"
 
 # %%%%%%%%%%%%%%%%%%%%
 # [os-linux-rhel] 变量
 # %%%%%%%%%%%%%%%%%%%%
-
-# ===================== Task Switch
-
-# OS User and Group
-os_user_and_group_enabled: no
-
-# OS Directory
-os_directory_enabled: no
-
-# OS Hosts
-os_host_enabled: no
-
-# OS Network
-os_network_enabled: no
-os_network_connections_refresh_and_config_enabled: no
-
-# OS SSH Connectivity
-os_ssh_connectivity_enabled: no
-
-# OS YUM
-os_yum_enabled: no
-
-# OS Linux Service
-os_service_enabled: no
-
-# OS Linux SELinux
-os_selinux_enabled: no
-
-# OS Linux Time
-os_time_enabled: no
-os_time__ntp_enabled: no
-
-# OS Grub
-os_grub_enabled: no
-
-# OS Linux Kernel Parameters
-os_kernel_parameters_enabled: no
-
-# OS / Storage / fdisk
-os_fdisk_enabled: no
-
-# OS/ Storage / iSCSI discovery
-os_iscsi_discovery_enabled: no
-
-# OS / Storage / Multipath
-os_multipath_enabled: no
-os_multipath_storage_dd_if_enabled: no
-
-# Python
-python_enabled: no
-
-# Oracle / install media / upload
-oracle_upload_install_media_enabled: no
-
-# Oracle / grid / install
-oracle_software_grid_enabled: no
-
-# Oracle / db / install
-oracle_software_db_enabled: yes
-
-# Oracle / db / instance
-oracle_db_instance_enabled: yes
 
 # ===================== [os_user_and_group.yml]
 
@@ -676,6 +681,8 @@ os_fdisk__mount_point_owner: "oracle"
 os_fdisk__mount_point_group: "oinstall"
 os_fdisk__mount_point_mode: "0777"
 
+# ===================== [python.yml]
+
 # %%%%%%%%%%%%%%%%%%%%
 # [db-oracle-rac] 变量
 # %%%%%%%%%%%%%%%%%%%%
@@ -708,4 +715,8 @@ oracle_software__shellfile__grid_diskgroup_mount: "{{ dir__oracle_upload_sql_fil
 
 # ===================== [oracle_db_instance.yml]
 
-# ===================== [python.yml]
+oracle_db_instance__post_install__sqlfile_list:
+  - "handle_redo.sql"
+  - "handle_db_optimize.sql"
+
+# ===================== Finished

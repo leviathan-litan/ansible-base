@@ -1,0 +1,53 @@
+# %%%%%%%%%%%%%%%%%%%%
+# 全局任务「开关」
+# %%%%%%%%%%%%%%%%%%%%
+
+# ===================== Task Switch
+
+# # Oracle / install media / upload
+# oracle_upload_install_media_enabled: yes
+
+# # Oracle / grid / install
+# oracle_software_grid_enabled: yes
+
+# # Oracle / db / install
+# oracle_software_db_enabled: yes
+
+# # Oracle / db / instance
+# oracle_db_instance_enabled: yes
+
+# %%%%%%%%%%%%%%%%%%%%
+# [db-oracle-rac] 变量
+# %%%%%%%%%%%%%%%%%%%%
+
+# # ===================== [oracle_upload_install_media.yml]
+
+# oracle_upload_install_media__file_install_media_grid: "{{ dir__ansible_server__files }}/oracle/LINUX.X64_193000_grid_home.zip"
+# oracle_upload_install_media__file_install_media_db: "{{ dir__ansible_server__files }}/oracle/LINUX.X64_193000_db_home.zip"
+
+# oracle_upload_install_media__file_install_media_patch_6880880: "{{ dir__ansible_server__files }}/oracle/p6880880_190000_Linux-x86-64.zip"
+# oracle_upload_install_media__file_install_media_patch_34518661: "{{ dir__ansible_server__files }}/oracle/p34518661_190000_Linux-x86-64.zip"
+
+# oracle_upload_install_media__file_install_media_patch_list:
+#   - "{{ oracle_upload_install_media__file_install_media_patch_6880880 }}"
+#   - "{{ oracle_upload_install_media__file_install_media_patch_34518661 }}"
+
+# # ===================== [oracle_software_grid.yml]
+
+# oracle_software__responsefile_grid: "{{ dir__oracle_upload_response_file }}/oracle_19c_grid_install.rsp"
+# oracle_software__responsefile_oracle: "{{ dir__oracle_upload_response_file }}/oracle_19c_oracle_install.rsp"
+
+# oracle_software__responsefile_dbca: "{{ dir__oracle_upload_response_file }}/oracle_19c_oracle_dbca.rsp"
+# oracle_software__dbtfile_dbca: "{{ dir__oracle_upload_response_file }}/oracle_19c_oracle_dbca.dbt"
+
+# oracle_software__sqlfile__grid_diskgroup_create: "{{ dir__oracle_upload_sql_file }}/diskgroup_create.sql"
+# oracle_software__sqlfile__grid_diskgroup_mount: "{{ dir__oracle_upload_sql_file }}/diskgroup_mount.sql"
+
+# oracle_software__shellfile__grid_diskgroup_create: "{{ dir__oracle_upload_sql_file }}/diskgroup_create.sh"
+# oracle_software__shellfile__grid_diskgroup_mount: "{{ dir__oracle_upload_sql_file }}/diskgroup_mount.sh"
+
+# # ===================== [oracle_db_instance.yml]
+
+# oracle_db_instance__post_install__sqlfile_list:
+#   - "handle_redo.sql"
+#   - "handle_db_optimize.sql"

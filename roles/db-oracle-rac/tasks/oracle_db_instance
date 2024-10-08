@@ -83,3 +83,76 @@
   register: linux_command_oracle_param__pga_target_mb
 
 # ===================== 实例创建【模板文件】
+
+- name: "[oracle_db_instance.yml] dbca / dbt files"
+  template:
+    backup: yes
+    owner: oracle
+    group: oinstall
+    mode: 0755
+    src: "response_files/dbca_instance.dbt.j2"
+    dest: "{{ oracle_software__dbtfile_dbca }}"
+  become: yes
+  become_user: root
+  become_method: sudo
+
+- name: "[oracle_db_instance.yml] dbca / response files"
+  template:
+    backup: yes
+    owner: oracle
+    group: oinstall
+    mode: 0755
+    src: "response_files/dbca_instance.rsp.j2"
+    dest: "{{ oracle_software__responsefile_dbca }}"
+  become: yes
+  become_user: root
+  become_method: sudo
+
+# ===================== 静默安装
+
+- name: "[oracle_db_instance.yml] dbca / install"
+  shell: |
+    su - oracle -c 'dbca -silent -ignorePrereqFailure -createDatabase -responseFile {{ oracle_software__responsefile_dbca }}'
+  when: node_id == 1
+
+# ===================== 安装后脚本
+
+- name: "[oracle_db_instance.yml] dbca / post-install / glogin.sql"
+  copy:
+    backup: yes
+    force: yes
+    owner: oracle
+    group: oinstall
+    mode: 0755
+    src: "sql_files/glogin.sql"
+    dest: "{{ dir__oracle_home }}/sqlplus/admin/gloin.sql"
+
+- name: "[oracle_db_instance.yml] dbca / post-install / sql files / upload"
+  copy:
+    backup: yes
+    force: yes
+    owner: oracle
+    group: oinstall
+    mode: 0755
+    src: "sql_files/{{ item }}"
+    dest: "{{ dir__oracle_upload_sql_file }}/{{ item }}"
+  with_items: "{{ oracle_db_instance__post_install__sqlfile_list }}"
+  when: node_id == 1
+
+- name: "[oracle_db_instance.yml] dbca / post-install / sql files / shell file"
+  template:
+    backup: yes
+    owner: oracle
+    group: oinstall
+    mode: 0755
+    src: "sql_files/post_install__sql_execute.sh.j2"
+    dest: "{{ dir__oracle_upload_sql_file }}/post_install__sql_execute.sh"
+  when: node_id == 1
+
+- name: "dba"
+  shell: |
+    {{ dir__oracle_upload_sql_file }}/post_install__sql_execute.sh
+  become: yes
+  become_user: root
+  become_method: sudo
+  when: node_id == 1
