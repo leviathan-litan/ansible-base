@@ -5,26 +5,31 @@
 # OS User and Group
 - import_tasks: os_user_and_group.yml
   when:
+    - os_user_and_group_enabled is defined
     - os_user_and_group_enabled
 
 # OS / Storage / fdisk
 - import_tasks: os_fdisk.yml
   when:
+    - os_fdisk_enabled is defined
     - os_fdisk_enabled
 
 # OS Directory
 - import_tasks: os_directory.yml
   when:
+    - os_directory_enabled is defined
     - os_directory_enabled
 
 # Python
 - import_tasks: python.yml
   when:
+    - python_enabled is defined
     - python_enabled
 
 # OS Hosts
 - import_tasks: os_host.yml
   when:
+    - os_host_enabled is defined
     - os_host_enabled
 
 # OS Network
@@ -34,36 +39,43 @@
 # 3. （可选）对业务网段的两张网卡，做网卡绑定（Binding）
 - import_tasks: os_network.yml
   when:
+    - os_network_enabled is defined
     - os_network_enabled
 
 # OS SSH Connectivity
 - import_tasks: os_ssh_connectivity.yml
   when:
+    - os_ssh_connectivity_enabled is defined
     - os_ssh_connectivity_enabled
 
 # OS YUM
 - import_tasks: os_yum.yml
   when:
+    - os_yum_enabled is defined
     - os_yum_enabled
 
 # OS Linux Service
 - import_tasks: os_service.yml
   when:
+    - os_service_enabled is defined
     - os_service_enabled
 
 # OS Linux SELinux
 - import_tasks: os_selinux.yml
   when:
+    - os_selinux_enabled is defined
     - os_selinux_enabled
 
 # OS Linux Time
 - import_tasks: os_time.yml
   when:
+    - os_time_enabled is defined
     - os_time_enabled
 
 # OS Grub
 - import_tasks: os_grub.yml
   when:
+    - os_grub_enabled is defined
     - os_grub_enabled
 
 # OS Linux Kernerl Parameters
@@ -72,14 +84,17 @@
 # 2. os_network.yml
 - import_tasks: os_kernel_parameters.yml
   when:
+    - os_kernel_parameters_enabled is defined
     - os_kernel_parameters_enabled
 
 # OS / Storage / iSCSI discovery
 - import_tasks: os_iscsi_discovery.yml
   when:
+    - os_iscsi_discovery_enabled is defined
     - os_iscsi_discovery_enabled
 
 # OS / Storage / Multipath
 - import_tasks: os_multipath.yml
   when:
+    - os_multipath_enabled is defined
     - os_multipath_enabled
