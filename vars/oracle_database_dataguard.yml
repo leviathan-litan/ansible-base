@@ -68,6 +68,22 @@ os_multipath_storage_dd_if_enabled: no
 # Python
 python_enabled: yes
 
+# %%%%%%%%%%%%%%%%%%%%
+# Oracle Database 19c RAC / 变量
+# %%%%%%%%%%%%%%%%%%%%
+
+# 操作系统「root」口令
+linux_root_password: "oracle"
+
+# ===================== Database / 数据库
+
+# 实例名
+oracle_sid: "orcl"
+
+# 字符集
+characterSet: "AL32UTF8"
+nationalCharacterSet: "AL16UTF16"
+
 # ===================== Directory / 目录
 
 # --- 安装相关
@@ -259,23 +275,23 @@ os_yum__repofile_list_local_network:
 
 os_yum__repofile_list_public_network:
   # --- centos 7
-  # - file: "yum_repofile/centos7/centos-7.repo"
-  #   name: "centos-7.repo"
-  # - file: "yum_repofile/centos7/epel-7.repo"
-  #   name: "epel-7.repo"
+  - file: "yum_repofile/centos7/centos-7.repo"
+    name: "centos-7.repo"
+  - file: "yum_repofile/centos7/epel-7.repo"
+    name: "epel-7.repo"
   # --- centos 8
-  - file: "yum_repofile/centos8/centos-8.5.2111.repo"
-    name: "centos-8.5.2111.repo"
-  - file: "yum_repofile/centos8/epel-modular.repo"
-    name: "epel-modular.repo"
-  - file: "yum_repofile/centos8/epel-playground.repo"
-    name: "epel-playground.repo"
-  - file: "yum_repofile/centos8/epel-testing-modular.repo"
-    name: "epel-testing-modular.repo"
-  - file: "yum_repofile/centos8/epel-testing.repo"
-    name: "epel-testing.repo"
-  - file: "yum_repofile/centos8/epel.repo"
-    name: "epel.repo"
+  # - file: "yum_repofile/centos8/centos-8.5.2111.repo"
+  #   name: "centos-8.5.2111.repo"
+  # - file: "yum_repofile/centos8/epel-modular.repo"
+  #   name: "epel-modular.repo"
+  # - file: "yum_repofile/centos8/epel-playground.repo"
+  #   name: "epel-playground.repo"
+  # - file: "yum_repofile/centos8/epel-testing-modular.repo"
+  #   name: "epel-testing-modular.repo"
+  # - file: "yum_repofile/centos8/epel-testing.repo"
+  #   name: "epel-testing.repo"
+  # - file: "yum_repofile/centos8/epel.repo"
+  #   name: "epel.repo"
 
 # )))))) 软件安装列表
 
@@ -306,7 +322,7 @@ os_yum__install_list:
   - libaio
   - libaio-devel
   - libgcc
-  - libnsl
+  # - libnsl
   - libstdc++
   - libstdc++-devel
   - libX11
@@ -323,8 +339,10 @@ os_yum__install_list:
   # - pexpect
   - python3-pip
   - python3-devel
-  - python3-netaddr
-  - policycoreutils-python-utils
+  - python-netaddr
+  - python36-netaddr
+  # - python3-netaddr
+  # - policycoreutils-python-utils
   - sysstat
   - smartmontools
   - tree
@@ -409,3 +427,7 @@ list__os_limits:
     limit_type: "hard"
     limit_item: "memlock"
     value: "{{ linux_command_kernel_param__memlock.stdout }}"
+
+# ===================== [python.yml]
+
+python_command: "python"

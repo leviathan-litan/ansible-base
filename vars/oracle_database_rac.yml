@@ -715,6 +715,8 @@ os_fdisk__mount_point_mode: "0777"
 
 # ===================== [python.yml]
 
+python_command: "python3"
+
 # %%%%%%%%%%%%%%%%%%%%
 # [db-oracle-rac] 变量
 # %%%%%%%%%%%%%%%%%%%%
