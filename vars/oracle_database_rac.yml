@@ -97,6 +97,9 @@ oracle_sid: "orcl"
 characterSet: "AL32UTF8"
 nationalCharacterSet: "AL16UTF16"
 
+# 空间与大小
+db_recovery_file_dest_size: "40000MB"
+
 # 集群名称
 cluster_name: 'oracle-cluster'
 

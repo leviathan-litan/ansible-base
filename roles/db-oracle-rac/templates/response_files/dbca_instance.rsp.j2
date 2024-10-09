@@ -18,7 +18,7 @@ databaseType=MULTIPURPOSE
 policyManaged=false
 automaticMemoryManagement=false
 
-initParams=sga_target={{ linux_command_oracle_param__sga_target_mb.stdout }}MB,pga_aggregate_target={{ linux_command_oracle_param__pga_target_mb.stdout }}MB,db_recovery_file_dest_size=40000MB,audit_trail=none,recyclebin=off
+initParams=sga_target={{ linux_command_oracle_param__sga_target_mb.stdout }}MB,pga_aggregate_target={{ linux_command_oracle_param__pga_target_mb.stdout }}MB,db_recovery_file_dest_size={{ db_recovery_file_dest_size }},audit_trail=none,recyclebin=off
 
 listeners=LISTENER
 
