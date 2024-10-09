@@ -1,0 +1,13 @@
+# %%%%%%%%%%%%%%%%%%%%
+# Ansible / 变量文件: oracle_database_dataguard.yml
+# %%%%%%%%%%%%%%%%%%%%
+deploy_hosts: "db-oracle-dataguard"
+
+# %%%%%%%%%%%%%%%%%%%%
+# 全局任务「开关」
+# %%%%%%%%%%%%%%%%%%%%
+
+# ===================== Task Switch
+
+# OS Linux Time
+os_time_enabled: yes
