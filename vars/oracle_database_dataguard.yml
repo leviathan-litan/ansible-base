@@ -26,7 +26,7 @@ os_network_connections_refresh_and_config_enabled: no
 os_ssh_connectivity_enabled: no
 
 # OS YUM
-os_yum_enabled: yes
+os_yum_enabled: no
 
 # --- 自定义 YUM缓存
 os_yum_repodata_custom_enabled: no
@@ -68,3 +68,11 @@ os_multipath_storage_dd_if_enabled: no
 
 # Python
 python_enabled: no
+
+# %%%%%%%%%%%%%%%%%%%%
+# [os-linux-rhel] 变量
+# %%%%%%%%%%%%%%%%%%%%
+
+# ===================== [os_time.yml]
+
+os_time__timezone: "Asia/Shanghai"

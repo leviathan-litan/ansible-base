@@ -3,27 +3,27 @@
 # %%%%%%%%%%%%%%%%%%%%
 
 # OS User and Group
-- import_tasks: os_user_and_group.yml
+- include_tasks: os_user_and_group.yml
   when:
     - os_user_and_group_enabled
 
 # OS / Storage / fdisk
-- import_tasks: os_fdisk.yml
+- include_tasks: os_fdisk.yml
   when:
     - os_fdisk_enabled
 
 # OS Directory
-- import_tasks: os_directory.yml
+- include_tasks: os_directory.yml
   when:
     - os_directory_enabled
 
 # Python
-- import_tasks: python.yml
+- include_tasks: python.yml
   when:
     - python_enabled
 
 # OS Hosts
-- import_tasks: os_host.yml
+- include_tasks: os_host.yml
   when:
     - os_host_enabled
 
@@ -32,37 +32,37 @@
 # 1. 在「内核参数」中添加两个私有网卡的配置「ipv4.nic_name.rp_filter」
 # 2. （可选）刷新网卡配置文件，让配置文件更规范
 # 3. （可选）对业务网段的两张网卡，做网卡绑定（Binding）
-- import_tasks: os_network.yml
+- include_tasks: os_network.yml
   when:
     - os_network_enabled
 
 # OS SSH Connectivity
-- import_tasks: os_ssh_connectivity.yml
+- include_tasks: os_ssh_connectivity.yml
   when:
     - os_ssh_connectivity_enabled
 
 # OS YUM
-- import_tasks: os_yum.yml
+- include_tasks: os_yum.yml
   when:
     - os_yum_enabled
 
 # OS Linux Service
-- import_tasks: os_service.yml
+- include_tasks: os_service.yml
   when:
     - os_service_enabled
 
 # OS Linux SELinux
-- import_tasks: os_selinux.yml
+- include_tasks: os_selinux.yml
   when:
     - os_selinux_enabled
 
 # OS Linux Time
-- import_tasks: os_time.yml
+- include_tasks: os_time.yml
   when:
     - os_time_enabled
 
 # OS Grub
-- import_tasks: os_grub.yml
+- include_tasks: os_grub.yml
   when:
     - os_grub_enabled
 
@@ -70,16 +70,16 @@
 # 涉及内核修改的任务：
 # 1. os_kernel_parameters.yml
 # 2. os_network.yml
-- import_tasks: os_kernel_parameters.yml
+- include_tasks: os_kernel_parameters.yml
   when:
     - os_kernel_parameters_enabled
 
 # OS / Storage / iSCSI discovery
-- import_tasks: os_iscsi_discovery.yml
+- include_tasks: os_iscsi_discovery.yml
   when:
     - os_iscsi_discovery_enabled
 
 # OS / Storage / Multipath
-- import_tasks: os_multipath.yml
+- include_tasks: os_multipath.yml
   when:
     - os_multipath_enabled

@@ -5,10 +5,9 @@
 [ansible]
 127.0.0.1
 
-[os-linux-rhel]
-192.168.2.41
-192.168.2.42
-192.168.2.43
+# ####################
+# Oracle Database 19c RAC
+# ####################
 
 [db-oracle-rac]
 # eg:
@@ -17,6 +16,13 @@
 node1 ansible_host=192.168.2.18 node_id=1
 node2 ansible_host=192.168.2.20 node_id=2
 
+# ####################
+# Oracle Database 19c Data Guard
+# ####################
+
+[db-oracle-dataguard--linux]
+node3  ansible_host=192.168.2.41 dg_role=standby
+
 [db-oracle-dataguard]
-master ansible_host=192.168.2.90 dg_role=master  install=no
-node3  ansible_host=192.168.2.41 dg_role=standby install=yes
+master ansible_host=192.168.2.90 dg_role=master
+node3  ansible_host=192.168.2.41 dg_role=standby
