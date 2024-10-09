@@ -19,10 +19,15 @@ node2 ansible_host=192.168.2.20 node_id=2
 # ####################
 # Oracle Database 19c Data Guard
 # ####################
+# DG 角色：
+# Primary:  node_id=1
+# Standby:  node_id=2
 
+# 需要安装软件的节点 才需要配置操作系统
 [db-oracle-dataguard--linux]
-node3  ansible_host=192.168.2.41 dg_role=standby
+node3  ansible_host=192.168.2.41 node_id=2
 
+# 标注了「install=yes」的节点为：需要安装软件的节点
 [db-oracle-dataguard]
-master ansible_host=192.168.2.90 dg_role=master
-node3  ansible_host=192.168.2.41 dg_role=standby
+master ansible_host=192.168.2.90 node_id=1
+node3  ansible_host=192.168.2.41 node_id=2 install_oracle_software=yes

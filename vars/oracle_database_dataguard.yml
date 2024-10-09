@@ -1,7 +1,6 @@
 # %%%%%%%%%%%%%%%%%%%%
 # Ansible / 变量文件: oracle_database_dataguard.yml
 # %%%%%%%%%%%%%%%%%%%%
-deploy_hosts: "db-oracle-dataguard"
 
 # %%%%%%%%%%%%%%%%%%%%
 # 全局任务「开关」
@@ -10,23 +9,23 @@ deploy_hosts: "db-oracle-dataguard"
 # ===================== Task Switch
 
 # OS User and Group
-os_user_and_group_enabled: no
+os_user_and_group_enabled: yes
 
 # OS Directory
-os_directory_enabled: no
+os_directory_enabled: yes
 
 # OS Hosts
-os_host_enabled: no
+os_host_enabled: yes
 
 # OS Network
-os_network_enabled: no
+os_network_enabled: yes
 os_network_connections_refresh_and_config_enabled: no
 
 # OS SSH Connectivity
 os_ssh_connectivity_enabled: no
 
 # OS YUM
-os_yum_enabled: no
+os_yum_enabled: yes
 
 # --- 自定义 YUM缓存
 os_yum_repodata_custom_enabled: no
@@ -38,23 +37,23 @@ os_yum_repodata_local_iso_enabled: no
 os_yum_repodata_local_network_enabled: no
 
 # --- 公网
-os_yum_repodata_public_network_enabled: no
+os_yum_repodata_public_network_enabled: yes
 
 # OS Linux Service
-os_service_enabled: no
+os_service_enabled: yes
 
 # OS Linux SELinux
-os_selinux_enabled: no
+os_selinux_enabled: yes
 
 # OS Linux Time
 os_time_enabled: yes
 os_time__ntp_enabled: no
 
 # OS Grub
-os_grub_enabled: no
+os_grub_enabled: yes
 
 # OS Linux Kernel Parameters
-os_kernel_parameters_enabled: no
+os_kernel_parameters_enabled: yes
 
 # OS / Storage / fdisk
 os_fdisk_enabled: no
@@ -67,7 +66,38 @@ os_multipath_enabled: no
 os_multipath_storage_dd_if_enabled: no
 
 # Python
-python_enabled: no
+python_enabled: yes
+
+# ===================== Directory / 目录
+
+# --- 安装相关
+dir__oracle_upload_base: "{{ dir__ansible_client__files }}/oracle"
+
+dir__oracle_upload_yum_repofile: "{{ dir__oracle_upload_base }}/yum_repofile"
+dir__oracle_upload_yum_repodata: "{{ dir__oracle_upload_base }}/yum_repodata"
+
+dir__oracle_upload_rpm: "{{ dir__oracle_upload_base }}/rpm"
+dir__oracle_upload_network_scripts: "{{ dir__oracle_upload_base }}/network-scripts"
+
+dir__oracle_upload_oracle_installmedia: "{{ dir__oracle_upload_base }}/oracle_installmedia"
+dir__oracle_upload_oracle_installmedia_patch: "{{ dir__oracle_upload_base }}/oracle_installmedia_patch"
+
+dir__oracle_upload_response_file: "{{ dir__oracle_upload_base }}/response_file"
+dir__oracle_upload_sql_file: "{{ dir__oracle_upload_base }}/sql_file"
+
+dir__oracle_upload_oracle_installmedia_patch_6880880_unziped: "{{ dir__oracle_upload_oracle_installmedia_patch }}/OPatch"
+dir__oracle_upload_oracle_installmedia_patch_34518661_unziped: "{{ dir__oracle_upload_oracle_installmedia_patch }}/34518661"
+
+dir__oracle_upload_python_pexpect_unziped: "{{ dir__oracle_upload_base }}/pexpect"
+
+# --- 运行相关
+dir__oracle_base_dir__mountpoint: "/u01"
+dir__oracle_base_dir: "{{ dir__oracle_base_dir__mountpoint }}/app"
+
+dir__oracle_base: "{{ dir__oracle_base_dir }}/oracle"
+dir__oracle_home: "{{ dir__oracle_base }}/product/19"
+
+dir__oracle_inventory: "{{ dir__oracle_base }}/oraInventory"
 
 # %%%%%%%%%%%%%%%%%%%%
 # [os-linux-rhel] 变量
@@ -76,3 +106,306 @@ python_enabled: no
 # ===================== [os_time.yml]
 
 os_time__timezone: "Asia/Shanghai"
+
+# ===================== [os_service.yml]
+
+os_service__service_list:
+  - "avahi-daemon"
+  - "firewalld"
+  - "NetworkManager"
+
+# ===================== [os_service.yml]
+
+os_network__network_interfaces:
+  # --- 业务网段：主网卡
+  - category: "public"
+    nic_name: "ens192"
+    role: "normal"
+
+# ===================== [os_hosts.yml]
+
+deploy_hosts: "db-oracle-dataguard"
+os_host__comment: "# Oracle Database 19c Data Guard"
+
+os_host__hostname_ipaddr:
+  - hostname: "master"
+    ipaddr: "192.168.2.90"
+  - hostname: "node3"
+    ipaddr: "192.168.2.41"
+
+# ===================== [os_user_and_group.yml]
+
+os_user_and_group__group:
+  - name: "oinstall"
+    id: 4001
+  - name: "dba"
+    id: 4002
+
+os_user_and_group__user:
+  - username: "oracle"
+    password: "oracle"
+    comment: "Oracle Database User"
+    id: 4005
+    shell: "/bin/bash"
+    dir_home: "/home/oracle"
+    group: "oinstall"
+    groups:
+      - "dba"
+
+os_user_and_group__environment:
+  # 数据库用户【oracle】
+  - user: 'oracle'
+    key: 'ORACLE_SID'
+    value: '{{ oracle_sid }}'
+  - user: 'oracle'
+    key: 'ORACLE_BASE'
+    value: '{{ dir__oracle_base }}'
+  - user: 'oracle'
+    key: 'ORACLE_HOME'
+    value: '{{ dir__oracle_home }}'
+  - user: 'oracle'
+    key: 'PATH'
+    value: '$ORACLE_HOME/bin:$PATH:/sbin'
+  - user: 'oracle'
+    key: 'LD_LIBRARY_PATH'
+    value: '$ORACLE_HOME/lib:$LD_LIBRARY_PATH'
+
+# ===================== [os_directory.yml]
+
+os_directory__directory:
+  - path: "{{ dir__oracle_upload_base }}"
+    owner: "root"
+    group: "root"
+    mode: "0777"
+  - path: "{{ dir__oracle_upload_network_scripts }}"
+    owner: "root"
+    group: "root"
+    mode: "0777"
+  - path: "{{ dir__oracle_upload_yum_repofile }}"
+    owner: "root"
+    group: "root"
+    mode: "0777"
+  - path: "{{ dir__oracle_upload_yum_repodata }}"
+    owner: "root"
+    group: "root"
+    mode: "0777"
+  - path: "{{ dir__oracle_upload_rpm }}"
+    owner: "root"
+    group: "root"
+    mode: "0777"
+  - path: "{{ dir__oracle_upload_oracle_installmedia }}"
+    owner: "root"
+    group: "root"
+    mode: "0777"
+  - path: "{{ dir__oracle_upload_oracle_installmedia_patch }}"
+    owner: "oracle"
+    group: "oinstall"
+    mode: "0777"
+  - path: "{{ dir__oracle_upload_response_file }}"
+    owner: "oracle"
+    group: "oinstall"
+    mode: "0777"
+  - path: "{{ dir__oracle_upload_sql_file }}"
+    owner: "oracle"
+    group: "oinstall"
+    mode: "0777"
+  - path: "{{ dir__oracle_upload_python_pexpect_unziped }}"
+    owner: "root"
+    group: "root"
+    mode: "0777"
+  - path: "{{ dir__oracle_base_dir__mountpoint }}"
+    owner: "oracle"
+    group: "oinstall"
+    mode: "0777"
+  - path: "{{ dir__oracle_base_dir }}"
+    owner: "oracle"
+    group: "oinstall"
+    mode: "0777"
+  - path: "{{ dir__oracle_inventory }}"
+    owner: "oracle"
+    group: "oinstall"
+    mode: "0777"
+  - path: "{{ dir__oracle_base }}"
+    owner: "oracle"
+    group: "oinstall"
+    mode: "0755"
+  - path: "{{ dir__oracle_home }}"
+    owner: "oracle"
+    group: "oinstall"
+    mode: "0755"
+
+# ===================== [os_yum.yml]
+
+# )))))) 自定义缓存
+os_yum__file__repodata: "yum__oracle_db_19c_rac.zip"
+
+os_yum__repofile_list_repodata_custom:
+  - file: "yum_repofile/local/os_yum_repodata_custom.repo.j2"
+    name: "local.repo"
+
+# )))))) 本地 ISO
+
+os_yum__repofile_list_local_iso:
+  - file: "yum_repofile/local/os_yum_repodata_local_iso_rhel8.repo.j2"
+    name: "local.repo"
+
+# )))))) 局域网络
+
+os_yum__repofile_list_local_network:
+  - file: "yum_repofile/local/os_yum_repodata_local_network_rhel7.repo.j2"
+    name: "local.repo"
+
+# )))))) 公共网络
+
+os_yum__repofile_list_public_network:
+  # --- centos 7
+  # - file: "yum_repofile/centos7/centos-7.repo"
+  #   name: "centos-7.repo"
+  # - file: "yum_repofile/centos7/epel-7.repo"
+  #   name: "epel-7.repo"
+  # --- centos 8
+  - file: "yum_repofile/centos8/centos-8.5.2111.repo"
+    name: "centos-8.5.2111.repo"
+  - file: "yum_repofile/centos8/epel-modular.repo"
+    name: "epel-modular.repo"
+  - file: "yum_repofile/centos8/epel-playground.repo"
+    name: "epel-playground.repo"
+  - file: "yum_repofile/centos8/epel-testing-modular.repo"
+    name: "epel-testing-modular.repo"
+  - file: "yum_repofile/centos8/epel-testing.repo"
+    name: "epel-testing.repo"
+  - file: "yum_repofile/centos8/epel.repo"
+    name: "epel.repo"
+
+# )))))) 软件安装列表
+
+os_yum__rpm_list:
+  - file: "rpm/compat-libstdc++-33-3.2.3-72.el7.x86_64.rpm"
+    name: "compat-libstdc++-33-3.2.3-72.el7.x86_64.rpm"
+  - file: "rpm/cvuqdisk-1.0.10-1.rpm"
+    name: "cvuqdisk-1.0.10-1.rpm"
+
+os_yum__install_list:
+  - bc
+  - binutils
+  # - compat-libcap1
+  - device-mapper
+  - device-mapper-multipath
+  - elfutils-libelf
+  - elfutils-libelf-devel
+  - expat
+  - expect
+  # - expect-devel
+  - gcc
+  - gcc-c++
+  - glibc
+  - glibc-devel
+  - glibc-common
+  - glibc-headers
+  - ksh
+  - libaio
+  - libaio-devel
+  - libgcc
+  - libnsl
+  - libstdc++
+  - libstdc++-devel
+  - libX11
+  - libXau
+  - libxcb
+  - libXext
+  - libXi
+  - libXrender
+  - libXtst
+  - make
+  - net-tools
+  - nfs-utils
+  - psmisc
+  # - pexpect
+  - python3-pip
+  - python3-devel
+  - python3-netaddr
+  - policycoreutils-python-utils
+  - sysstat
+  - smartmontools
+  - tree
+  - unzip
+  - xorg-x11-server-utils
+
+# ===================== [os_kernel_parameters.yml]
+
+list__os_sysctl:
+  # --- vm
+  # vm.overcommit_memory: 1
+  vm.nr_hugepages: '{{ linux_command_kernel_param__hugepages.stdout }}'
+  vm.swappiness: 5
+  # --- kernel
+  kernel.shmall: "{{ linux_command_kernel_param__shmall.stdout }}"
+  kernel.shmmax: "{{ linux_command_kernel_param__shmmax.stdout }}"
+  kernel.shmmni: 4096
+  kernel.sem: 1024 70000 1024 256
+  # --- net core rmem
+  net.core.rmem_default: 262144
+  net.core.rmem_max: 4194304
+  # --- net core wmem
+  net.core.wmem_default: 262144
+  net.core.wmem_max: 1048576
+  # --- net ip local port range
+  net.ipv4.ip_local_port_range: 9000 65500
+  # --- net rp_filter
+  # net.ipv4.conf.enp0s8.rp_filter: 2
+  # net.ipv4.conf.enp0s9.rp_filter: 2
+  # --- net ipfrag
+  net.ipv4.ipfrag_high_thresh: 41943040 
+  net.ipv4.ipfrag_low_thresh: 40894464 
+  net.ipv4.ipfrag_max_dist: 1024 
+  net.ipv4.ipfrag_secret_interval: 600
+  net.ipv4.ipfrag_time: 120
+  # --- fs
+  fs.file-max: 6815744
+  fs.aio-max-nr: 1048576
+
+list__os_limits:
+  # --- nofile
+  - dest: "/etc/security/limits.conf"
+    domain: "oracle"
+    limit_type: "soft"
+    limit_item: "nofile"
+    value: "65536"
+  - dest: "/etc/security/limits.conf"
+    domain: "oracle"
+    limit_type: "hard"
+    limit_item: "nofile"
+    value: "65536"
+  # --- nproc
+  - dest: "/etc/security/limits.conf"
+    domain: "oracle"
+    limit_type: "soft"
+    limit_item: "nproc"
+    value: "16384"
+  - dest: "/etc/security/limits.conf"
+    domain: "oracle"
+    limit_type: "hard"
+    limit_item: "nproc"
+    value: "16384"
+  # --- stack
+  - dest: "/etc/security/limits.conf"
+    domain: "oracle"
+    limit_type: "soft"
+    limit_item: "stack"
+    value: "10240"
+  - dest: "/etc/security/limits.conf"
+    domain: "oracle"
+    limit_type: "hard"
+    limit_item: "stack"
+    value: "32768"
+  # --- memlock
+  - dest: "/etc/security/limits.conf"
+    domain: "oracle"
+    limit_type: "soft"
+    limit_item: "memlock"
+    value: "{{ linux_command_kernel_param__memlock.stdout }}"
+  - dest: "/etc/security/limits.conf"
+    domain: "oracle"
+    limit_type: "hard"
+    limit_item: "memlock"
+    value: "{{ linux_command_kernel_param__memlock.stdout }}"
