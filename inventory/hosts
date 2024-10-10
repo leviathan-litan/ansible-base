@@ -23,8 +23,12 @@ node2 ansible_host=192.168.2.20 node_id=2
 # Primary:  node_id=1
 # Standby:  node_id=2
 
-# 需要安装软件的节点 才需要配置操作系统
+# 哪些节点需要进行「操作系统」配置
 [db-oracle-dataguard--linux]
+node3  ansible_host=192.168.2.41 node_id=2
+
+# 哪些节点需要安装「Oracle」软件
+[db-oracle-dataguard--oracle-software]
 node3  ansible_host=192.168.2.41 node_id=2
 
 # 标注了「install=yes」的节点为：需要安装软件的节点

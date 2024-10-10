@@ -1,0 +1,57 @@
+# ===================== 动态参数计算
+
+- name: "动态计算 / SGA - 获取"
+  shell: "echo \"$(grep -i memtotal /proc/meminfo | awk '{print $2}') /1024 /2 * 0.8\" | bc | cut -d'.' -f1"
+  register: linux_command_oracle_param__sga_target_mb
+
+- name: "动态计算 / PGA - 获取"
+  shell: "echo \"$(grep -i memtotal /proc/meminfo | awk '{print $2}') /1024 /2 * 0.2\" | bc | cut -d'.' -f1"
+  register: linux_command_oracle_param__pga_target_mb
+
+# ===================== 实例创建【模板文件】
+
+- name: "[oracle_db_instance.yml] dbca / dbt files"
+  template:
+    backup: yes
+    owner: oracle
+    group: oinstall
+    mode: 0755
+    src: "response_files/dbca_instance.dbt.j2"
+    dest: "{{ oracle_software__dbtfile_dbca }}"
+  become: yes
+  become_user: root
+  become_method: sudo
+
+- name: "[oracle_db_instance.yml] dbca / response files"
+  template:
+    backup: yes
+    owner: oracle
+    group: oinstall
+    mode: 0755
+    src: "response_files/dbca_instance.rsp.j2"
+    dest: "{{ oracle_software__responsefile_dbca }}"
+  become: yes
+  become_user: root
+  become_method: sudo
+
+# ===================== 静默安装
+
+- name: "[oracle_db_instance.yml] dbca / install"
+  shell: |
+    su - oracle -c 'dbca -silent -ignorePrereqFailure -createDatabase -responseFile {{ oracle_software__responsefile_dbca }}'
+
+# ===================== 安装后脚本
+
+- name: "[oracle_db_instance.yml] dbca / post-install / glogin.sql"
+  copy:
+    backup: yes
+    force: yes
+    owner: oracle
+    group: oinstall
+    mode: 0755
+    src: "sql_files/glogin.sql"
+    dest: "{{ dir__oracle_home }}/sqlplus/admin/gloin.sql"
+
+- include_tasks: oracle_software_instance_postinstall_sql.yml
+  when:
+    - db_oracle_software__enabled_instance_post_install_sql

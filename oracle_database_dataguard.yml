@@ -9,3 +9,11 @@
   become: yes
   become_user: root
   become_method: sudo
+
+- name: "[Oracle DB 19c Data Guard] 数据库软件安装（包含：是否建库）"
+  hosts:
+    - db-oracle-dataguard--oracle-software
+  roles:
+    - role: db-oracle-software
+  vars_files:
+    - vars/oracle_database_dataguard.yml
