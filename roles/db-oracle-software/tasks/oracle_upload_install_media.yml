@@ -1,9 +1,18 @@
 - name: "Oracle Database software: 上传安装介质"
-  unarchive:
+  copy:
     owner: oracle
     group: oinstall
     mode: 0755
     src: "{{ oracle_upload_install_media__file_install_media_db }}"
+    dest: "{{ oracle_upload_install_media__file_install_media_db_after }}"
+
+- name: "Oracle Database software: 解压安装介质"
+  unarchive:
+    owner: oracle
+    group: oinstall
+    mode: 0755
+    copy: no
+    src: "{{ oracle_upload_install_media__file_install_media_db_after }}"
     dest: "{{ dir__oracle_home }}"
 
 - name: "Oracle 补丁包: 上传安装介质"

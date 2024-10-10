@@ -92,6 +92,7 @@ nationalCharacterSet: "AL16UTF16"
 # ===================== Files / 文件
 
 oracle_upload_install_media__file_install_media_db: "{{ dir__ansible_server__files }}/oracle/LINUX.X64_193000_db_home.zip"
+oracle_upload_install_media__file_install_media_db_after: "{{ dir__oracle_upload_oracle_installmedia }}/LINUX.X64_193000_db_home.zip"
 
 oracle_upload_install_media__file_install_media_patch_6880880: "{{ dir__ansible_server__files }}/oracle/p6880880_190000_Linux-x86-64.zip"
 oracle_upload_install_media__file_install_media_patch_34518661: "{{ dir__ansible_server__files }}/oracle/p34518661_190000_Linux-x86-64.zip"
