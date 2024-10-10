@@ -5,8 +5,6 @@
     mode: 0755
     src: "{{ oracle_upload_install_media__file_install_media_db }}"
     dest: "{{ dir__oracle_home }}"
-  when:
-    - db_oracle_software__enabled_oracle_install
 
 - name: "Oracle 补丁包: 上传安装介质"
   unarchive:
