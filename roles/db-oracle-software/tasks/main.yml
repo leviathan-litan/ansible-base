@@ -1,6 +1,10 @@
 - include_tasks: oracle_upload_install_media.yml
+  when:
+    - db_oracle_software__enabled_oracle_install
 
 - include_tasks: oracle_software_install_oracle.yml
+  when:
+    - db_oracle_software__enabled_oracle_install
 
 - include_tasks: oracle_software_instance_create.yml
   when:
