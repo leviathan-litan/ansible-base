@@ -1,5 +1,5 @@
 - name: "Oracle Database software: 上传安装介质"
-  copy:
+  rsync:
     owner: oracle
     group: oinstall
     mode: 0755
@@ -11,16 +11,29 @@
     owner: oracle
     group: oinstall
     mode: 0755
-    copy: no
+    remote_src: yes
     src: "{{ oracle_upload_install_media__file_install_media_db_after }}"
     dest: "{{ dir__oracle_home }}"
 
 - name: "Oracle 补丁包: 上传安装介质"
+  rsync:
+    owner: oracle
+    group: oinstall
+    mode: 0777
+    src: "{{ item.file }}"
+    dest: "{{ item.rsync }}"
+  with_items: 
+    - "{{ oracle_upload_install_media__file_install_media_patch_list }}"
+  when:
+    - db_oracle_software__enabled_patch_install
+
+- name: "Oracle 补丁包: 解压安装介质"
   unarchive:
     owner: oracle
     group: oinstall
     mode: 0777
-    src: "{{ item }}"
+    remote_src: yes
+    src: "{{ item.rsync }}"
     dest: "{{ dir__oracle_upload_oracle_installmedia_patch }}"
   with_items: "{{ oracle_upload_install_media__file_install_media_patch_list }}"
   when:

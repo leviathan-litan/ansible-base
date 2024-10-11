@@ -91,7 +91,7 @@ characterSet: "AL32UTF8"
 nationalCharacterSet: "AL16UTF16"
 
 # 空间与大小
-db_recovery_file_dest_size: "40000MB"
+db_recovery_file_dest_size: "4000MB"
 
 # ===================== Files / 文件
 
@@ -101,9 +101,22 @@ oracle_upload_install_media__file_install_media_db_after: "{{ dir__oracle_upload
 oracle_upload_install_media__file_install_media_patch_6880880: "{{ dir__ansible_server__files }}/oracle/p6880880_190000_Linux-x86-64.zip"
 oracle_upload_install_media__file_install_media_patch_34518661: "{{ dir__ansible_server__files }}/oracle/p34518661_190000_Linux-x86-64.zip"
 
+oracle_upload_install_media__file_install_media_patch_6880880_rsync: "{{ dir__oracle_upload_oracle_installmedia_patch }}/p6880880_190000_Linux-x86-64.zip"
+oracle_upload_install_media__file_install_media_patch_34518661_rsync: "{{ dir__oracle_upload_oracle_installmedia_patch }}/p34518661_190000_Linux-x86-64.zip"
+
 oracle_upload_install_media__file_install_media_patch_list:
-  - "{{ oracle_upload_install_media__file_install_media_patch_6880880 }}"
-  - "{{ oracle_upload_install_media__file_install_media_patch_34518661 }}"
+  - file: "{{ oracle_upload_install_media__file_install_media_patch_6880880 }}"
+    rsync: "{{ oracle_upload_install_media__file_install_media_patch_6880880_rsync }}"
+  - file: "{{ oracle_upload_install_media__file_install_media_patch_34518661 }}"
+    rsync: "{{ oracle_upload_install_media__file_install_media_patch_34518661_rsync }}"
+
+# oracle_upload_install_media__file_install_media_patch_list:
+#   - "{{ oracle_upload_install_media__file_install_media_patch_6880880 }}"
+#   - "{{ oracle_upload_install_media__file_install_media_patch_34518661 }}"
+
+# oracle_upload_install_media__file_install_media_patch_list_rsync:
+#   - "{{ oracle_upload_install_media__file_install_media_patch_6880880_rsync }}"
+#   - "{{ oracle_upload_install_media__file_install_media_patch_34518661_rsync }}"
 
 oracle_software__responsefile_oracle: "{{ dir__oracle_upload_response_file }}/oracle_19c_oracle_install.rsp"
 
@@ -373,6 +386,7 @@ os_yum__install_list:
   - python36-netaddr
   # - python3-netaddr
   # - policycoreutils-python-utils
+  - rsync
   - sysstat
   - smartmontools
   - tree
