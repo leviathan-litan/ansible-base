@@ -1,0 +1,46 @@
+- name: "[Data Guard] display: shmmax"
+  debug:
+    msg: "{{ linux_command_kernel_param__shmmax.stdout }}"
+
+- name: "[Data Guard] display: shmall"
+  debug:
+    msg: "{{ linux_command_kernel_param__shmall.stdout }}"
+
+- name: "[Data Guard] display: hugepages"
+  debug:
+    msg: "{{ linux_command_kernel_param__hugepages.stdout }}"
+
+- name: "[Data Guard] display: memlock"
+  debug:
+    msg: "{{ linux_command_kernel_param__memlock.stdout }}"
+
+- name: "[Data Guard] set variable: sga_target"
+  shell: "echo \"{{ linux_command_kernel_param__shmmax.stdout }} *0.8\" | bc"
+  register: db_param_sga_target
+
+- name: "[Data Guard] set variable: sga_target"
+  shell: "echo \"{{ linux_command_kernel_param__shmmax.stdout }} *0.2\" | bc"
+  register: db_param_pga_aggregate_target
+
+- name: "[Data Guard] set variable: sga_target"
+  template:
+    backup: yes
+    owner: root
+    group: root
+    mode: 0755
+    src: "init.ora.j2"
+    dest: "{{ dir__oracle_home }}/dbs/init{{ oracle_sid }}.ora"
+
+- name: "[os_directory.yml] create directories"
+  file:
+    state: directory
+    owner: "oracle"
+    group: "oinstall"
+    mode: "0755"
+    path: "{{ item }}"
+  with_items: 
+    - "{{ dir__oracle_base }}/admin/{{ oracle_sid }}/adump"
+    - "{{ dg_datafile_target }}"
+    - "{{ dg_logfile_target }}"
+    - "{{ dir__oracle_base }}/oradata/{{ dg_db_unique_name_target }}/controlfile"
+    - "{{ dir__oracle_base }}/fast_recovery_area"

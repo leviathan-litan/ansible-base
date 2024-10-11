@@ -34,4 +34,4 @@ node3  ansible_host=192.168.2.41 node_id=2
 # 标注了「install=yes」的节点为：需要安装软件的节点
 [db-oracle-dataguard]
 master ansible_host=192.168.2.90 node_id=1
-node3  ansible_host=192.168.2.41 node_id=2 install_oracle_software=yes
+node3  ansible_host=192.168.2.41 node_id=2

@@ -1,0 +1,35 @@
+*.compatible='19.0.0.0.0'
+
+*.db_name='{{ oracle_sid }}'
+*.db_unique_name='{{ dg_db_unique_name_target }}'
+*.service_names='{{ oracle_sid }}'
+
+*.db_block_size=8192
+*.open_cursors=300
+*.processes=150
+
+*.audit_trail='none'
+*.recyclebin='off'
+*.standby_file_management=auto
+*.remote_login_passwordfile='exclusive'
+
+*.sga_target={{ db_param_sga_target }}
+*.pga_aggregate_target={{ db_param_pga_aggregate_target }}
+
+*.diagnostic_dest='{{ dir__oracle_base }}'
+*.audit_file_dest='{{ dir__oracle_base }}/admin/{{ oracle_sid }}/adump'
+
+*.control_files='{{ dir__oracle_base }}/oradata/{{ dg_db_unique_name_target }}/controlfile/control01.ctl','{{ dir__oracle_base }}/oradata/{{ dg_db_unique_name_target }}/controlfile/control02.ctl'
+
+*.fal_server={{ dg_db_unique_name_source }}
+*.fal_client={{ dg_db_unique_name_target }}
+
+*.db_file_name_convert='{{ dg_datafile_source }}','{{ dg_datafile_target }}'
+
+*.log_archive_format='%t_%s_%r.dbf'
+*.log_file_name_convert='{{ dg_logfile_source }}','{{ dg_logfile_target }}'
+*.log_archive_config='dg_config=({{ dg_db_unique_name_source }},{{ dg_db_unique_name_target }})'
+*.log_archive_dest_1='location=use_db_recovery_file_dest valid_for=(all_logfiles,all_roles) db_unique_name={{ dg_db_unique_name_target }}'
+
+*.db_recovery_file_dest_size={{ db_recovery_file_dest_size }}
+*.db_recovery_file_dest='{{ dir__oracle_base }}/fast_recovery_area'

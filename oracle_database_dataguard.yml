@@ -1,4 +1,4 @@
-- name: "[Oracle DB 19c Data Guard] Operating System / Linux / RHEL"
+- name: "[Oracle DB 19c Data Guard] 操作系统配置"
   hosts:
     - db-oracle-dataguard--linux
   roles:
@@ -15,5 +15,13 @@
     - db-oracle-dataguard--oracle-software
   roles:
     - role: db-oracle-software
+  vars_files:
+    - vars/oracle_database_dataguard.yml
+
+- name: "[Oracle DB 19c Data Guard] Data Guard 配置"
+  hosts:
+    - db-oracle-dataguard
+  roles:
+    - role: db-oracle-dataguard
   vars_files:
     - vars/oracle_database_dataguard.yml

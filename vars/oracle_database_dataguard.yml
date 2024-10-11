@@ -69,9 +69,9 @@ os_multipath_storage_dd_if_enabled: no
 python_enabled: yes
 
 # Oracle Software Install
-db_oracle_software__enabled_oracle_install: yes
-db_oracle_software__enabled_patch_install: yes
-db_oracle_software__enabled_instance_create: yes
+db_oracle_software__enabled_oracle_install: no
+db_oracle_software__enabled_patch_install: no
+db_oracle_software__enabled_instance_create: no
 db_oracle_software__enabled_instance_post_install_sql: no
 
 # %%%%%%%%%%%%%%%%%%%%
@@ -92,6 +92,22 @@ nationalCharacterSet: "AL16UTF16"
 
 # 空间与大小
 db_recovery_file_dest_size: "4000MB"
+
+# ===================== Data Guard
+
+# Oracle Database / Data Guard
+
+# --- Source
+dg_db_unique_name_source: "orcl"
+dg_ipaddr_source: "192.168.2.90"
+dg_datafile_source: "+DATA"
+dg_logfile_source: "+REDO"
+
+# --- Target
+dg_db_unique_name_target: "orcldg"
+dg_ipaddr_target: "192.168.2.41"
+dg_datafile_target: "{{ dir__oracle_base }}/oradata/{{ dg_db_unique_name_target }}/datafile"
+dg_logfile_target: "{{ dir__oracle_base }}/oradata/{{ dg_db_unique_name_target }}/onlinelog"
 
 # ===================== Files / 文件
 
