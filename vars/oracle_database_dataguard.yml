@@ -106,6 +106,8 @@ standby_logfile_size: "104857600"
 
 # ===================== Data Guard
 
+dg_rman_logfile: "/home/oracle/rman.log"
+
 # Oracle Database / Data Guard
 
 # --- Source

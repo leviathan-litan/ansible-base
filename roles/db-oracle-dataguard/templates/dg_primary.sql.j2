@@ -1,4 +1,6 @@
 alter system set log_archive_config='dg_config=({{ dg_db_unique_name_source }},{{ dg_db_unique_name_target }})';
 alter system set log_archive_dest_2='service={{ dg_db_unique_name_target }} lgwr async valid_for=(all_logfiles,primary_role) db_unique_name={{ dg_db_unique_name_target }}';
 
+alter database force logging;
+
 exit;
