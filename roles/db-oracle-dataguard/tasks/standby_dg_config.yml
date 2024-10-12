@@ -19,9 +19,10 @@
 
 - name: "[Data Guard] 备库配置 / RMAN / 执行"
   shell: |
-    rman target sys/{{ oracle_sys_password }}@{{ dg_db_unique_name_source }} auxiliary sys/{{ oracle_sys_password }}@{{ dg_db_unique_name_target }}
+    su - oracle -c "rman target sys/{{ oracle_sys_password }}@{{ dg_db_unique_name_source }} auxiliary sys/{{ oracle_sys_password }}@{{ dg_db_unique_name_target }}"
   become: yes
-  become_user: oracle
+  become_user: root
+  become_method: sudo
 
 - name: "[Data Guard] 备库配置 / Standby Logfile / SQL"
   template:
