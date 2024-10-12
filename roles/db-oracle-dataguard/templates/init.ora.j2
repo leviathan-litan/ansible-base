@@ -31,5 +31,5 @@
 *.log_archive_config='dg_config=({{ dg_db_unique_name_source }},{{ dg_db_unique_name_target }})'
 *.log_archive_dest_1='location=use_db_recovery_file_dest valid_for=(all_logfiles,all_roles) db_unique_name={{ dg_db_unique_name_target }}'
 
-*.db_recovery_file_dest_size={{ db_param_db_recovery_file_dest_size }}
+*.db_recovery_file_dest_size={{ db_param_db_recovery_file_dest_size.stdout }}
 *.db_recovery_file_dest='{{ dir__oracle_base }}/fast_recovery_area'
