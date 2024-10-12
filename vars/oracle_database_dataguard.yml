@@ -86,6 +86,9 @@ linux_root_password: "oracle"
 # 实例名
 oracle_sid: "orcl"
 
+# 密码
+oracle_sys_password: "oracle"
+
 # 字符集
 characterSet: "AL32UTF8"
 nationalCharacterSet: "AL16UTF16"
