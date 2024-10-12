@@ -93,7 +93,7 @@
 
 - name: "[Data Guard] Instance / listener / startup"
   shell: |
-    lsnrctl start
+    su - oracle -c "lsnrctl start"
   become: yes
-  become_user: oracle
+  become_user: root
   become_method: sudo
