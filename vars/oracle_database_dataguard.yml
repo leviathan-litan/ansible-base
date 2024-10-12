@@ -102,6 +102,9 @@ nationalCharacterSet: "AL16UTF16"
 # 空间与大小
 # --- 如果要写到参数文件（init.ora）中，则需要将「MB」的单位转换为「Byte」的单位
 db_recovery_file_dest_size: "4000MB"
+
+# --- 要跟主库的REDO的大小一样(这个应该是变量)
+# --- select bytes from v$log;
 standby_logfile_size: "104857600"
 
 # ===================== Data Guard
