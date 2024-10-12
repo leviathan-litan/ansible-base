@@ -75,7 +75,7 @@
     create: yes
     insertafter: EOF
     marker: "# {mark} [Ansible] Oracle database DG / Standby"
-    block: "{{ dg_tnsnames_records_standby.stdout_lines }}"
+    block: "{{ dg_tnsnames_records_standby.stdout }}"
     path: "{{ dir__oracle_home }}/network/admin/tnsnames.ora"
 
 - name: "[Data Guard] Instance / primary sql / upload sql"
