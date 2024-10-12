@@ -8,21 +8,18 @@
     src: "{{ dg_source__passwordfile }}"
     dest: "{{ dir__oracle_home }}/dbs/orapw{{ oracle_sid }}"
 
-# - name: "[Data Guard] 备库配置 / RMAN / 脚本文件"
-#   copy:
-#     owner: oracle
-#     group: oinstall
-#     mode: 0755
-#     backup: yes
-#     src: "rman_standby.rman"
-#     dest: "{{ dir__oracle_upload_sql_file }}/rman_standby.rman"
+- name: "[Data Guard] 备库配置 / RMAN / 脚本文件"
+  copy:
+    owner: oracle
+    group: oinstall
+    mode: 0755
+    backup: yes
+    src: "rman_standby.rman"
+    dest: "{{ dir__oracle_upload_sql_file }}/rman_standby.rman"
 
 - name: "[Data Guard] 备库配置 / RMAN / 执行"
-  expect: 
-    command: |
-      su - oracle -c "rman target log={{ dg_rman_logfile }} sys/{{ oracle_sys_password }}@{{ dg_db_unique_name_source }} auxiliary sys/{{ oracle_sys_password }}@{{ dg_db_unique_name_target }}"
-    responses:
-      RMAN> : "duplicate target database for standby from active database;"
+  shell: |
+    su - oracle -c "rman target sys/{{ oracle_sys_password }}@{{ dg_db_unique_name_source }} auxiliary sys/{{ oracle_sys_password }}@{{ dg_db_unique_name_target }} log={{ dg_rman_logfile }} cmdfile={{ dir__oracle_upload_sql_file }}/rman_standby.rman"
   become: yes
   become_user: root
   become_method: sudo
