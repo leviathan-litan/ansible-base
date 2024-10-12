@@ -1,0 +1,102 @@
+# 配置文件 [/etc/hosts]
+- name: "[os_host.yml] Backup /etc/hosts, then add a empty line"
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    insertafter: EOF
+    backup: true
+    line: ' '
+
+- name: "[os_host.yml] Add annotation to /etc/hosts"
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    insertafter: EOF
+    line: "{{ os_host__comment }}"
+
+# SIMPLE
+- name: "[os_host.yml] Add a sequential series of [{{ deploy_hosts }}] hosts to /etc/hosts"
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    insertafter: EOF
+    line: "{{ hostvars[item]['ansible_host'] }}    {{ item }}"
+  with_items:
+    - "{{ groups[deploy_hosts] }}"
+
+# 配置 DG
+- name: "[Data Guard] 主库端 / 密码文件：路径"
+  shell: |
+    {{ dg_db_oracle_home_source }}/bin/srvctl config database -d {{ oracle_sid }} | grep Password | awk '{print $3}'
+  register: dg_primary_passwordfile_path
+  become: yes
+  become_user: root
+  become_method: sudo
+
+- name: "[Data Guard] 主库端 / 密码文件：路径 / 展示"
+  debug:
+    msg: "密码文件的路径【{{ dg_primary_passwordfile_path.stdout }}】"
+
+- name: "[Data Guard] 主库端 / 密码文件 / asmcmd pwcopy"
+  shell: |
+    {{ dg_db_oracle_home_source }}/bin/asmcmd pwcopy {{ dg_primary_passwordfile_path.stdout }} {{ dg_source__passwordfile }}
+  become: yes
+  become_user: root
+  become_method: sudo
+
+- name: "[Data Guard] 主库端 / 密码文件 / 传递给备库端"
+  expect: 
+    command: |
+      scp {{ dg_source__passwordfile }} oracle@{{ dg_ipaddr_target }}:/tmp
+    responses:
+      Are you sure you want to continue connecting (yes/no/[fingerprint])? : "yes"
+      (.*)password : "{{ linux_oracle_password }}"
+  become: yes
+  become_user: root
+  become_method: sudo
+
+- name: "[Data Guard] 主库端 / tnsnames.ora.primary"
+  template:
+    owner: oracle
+    group: oinstall
+    mode: 0755
+    backup: yes
+    src: "tnsnames.ora.primary.j2"
+    dest: "/tmp/tnsnames.ora.primary"
+
+- name: "[Data Guard] 主库端 / tnsnames.ora.primary / 存入变量"
+  shell: |
+    cat /tmp/tnsnames.ora.primary
+  register: dg_tnsnames_records_standby
+
+- name: "[Data Guard] 主库端 / tnsnames.ora"
+  blockinfile:
+    owner: oracle
+    group: oinstall
+    mode: 0755
+    backup: yes
+    create: yes
+    insertafter: EOF
+    marker: "# {mark} [Ansible] Oracle database DG / Standby"
+    block: "{{ dg_tnsnames_records_standby.stdout_lines }}"
+    path: "{{ dir__oracle_home }}/network/admin/tnsnames.ora"
+
+- name: "[Data Guard] Instance / primary sql / upload sql"
+  template:
+    owner: oracle
+    group: oinstall
+    mode: 0755
+    src: "dg_primary.sql.j2"
+    dest: "{{ dir__oracle_upload_sql_file }}/dg_primary.sql"
+
+- name: "[Data Guard] Instance / primary sql / upload shell"
+  template:
+    owner: oracle
+    group: oinstall
+    mode: 0755
+    src: "run_dg_primary.sh.j2"
+    dest: "{{ dir__oracle_upload_sql_file }}/run_dg_primary.sh"
+
+- name: "[Data Guard] Instance / primary sql / execute"
+  shell: |
+    {{ dir__oracle_upload_sql_file }}/run_dg_primary.sh
+  become: yes
+  become_user: root
+  become_method: sudo

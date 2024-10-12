@@ -30,8 +30,8 @@
 - name: "[Data Guard] Parameter files (init.ora)"
   template:
     backup: yes
-    owner: root
-    group: root
+    owner: oracle
+    group: oinstall
     mode: 0755
     src: "init.ora.j2"
     dest: "{{ dir__oracle_home }}/dbs/init{{ oracle_sid }}.ora"
@@ -47,14 +47,14 @@
     - "{{ dir__oracle_base }}/admin/{{ oracle_sid }}/adump"
     - "{{ dg_datafile_target }}"
     - "{{ dg_logfile_target }}"
-    - "{{ dir__oracle_base }}/oradata/{{ dg_db_unique_name_target }}/controlfile"
+    - "{{ dir__oracle_base }}/oradata"
     - "{{ dir__oracle_base }}/fast_recovery_area"
 
 - name: "[Data Guard] listener.ora"
   template:
     backup: yes
-    owner: root
-    group: root
+    owner: oracle
+    group: oinstall
     mode: 0755
     src: "listener.ora.j2"
     dest: "{{ dir__oracle_home }}/network/admin/listener.ora"
@@ -62,10 +62,10 @@
 - name: "[Data Guard] tnsnames.ora"
   template:
     backup: yes
-    owner: root
-    group: root
+    owner: oracle
+    group: oinstall
     mode: 0755
-    src: "tnsnames.ora.j2"
+    src: "tnsnames.ora.standby.j2"
     dest: "{{ dir__oracle_home }}/network/admin/tnsnames.ora"
 
 - name: "[Data Guard] Instance / startup nomount / upload sql"

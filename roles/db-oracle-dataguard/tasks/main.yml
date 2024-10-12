@@ -1,4 +1,14 @@
-- include_tasks: dg-target.yml
+- include_tasks: standby_instance_nomount.yml
   when:
     - node_id == 2
+    - db_oracle_dataguard__step_1__enabled_standby_instance_nomount
 
+- include_tasks: primary_dg_config.yml
+  when:
+    - node_id == 1
+    - db_oracle_dataguard__step_2__enabled_primary_dg_config
+
+- include_tasks: standby_dg_config.yml
+  when:
+    - node_id == 2
+    - db_oracle_dataguard__step_3__enabled_standby_dg_config

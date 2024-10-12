@@ -19,7 +19,7 @@
 *.diagnostic_dest='{{ dir__oracle_base }}'
 *.audit_file_dest='{{ dir__oracle_base }}/admin/{{ oracle_sid }}/adump'
 
-*.control_files='{{ dir__oracle_base }}/oradata/{{ dg_db_unique_name_target }}/controlfile/control01.ctl','{{ dir__oracle_base }}/oradata/{{ dg_db_unique_name_target }}/controlfile/control02.ctl'
+*.control_files='{{ dir__oracle_base }}/oradata/control01.ctl','{{ dir__oracle_base }}/oradata/control02.ctl'
 
 *.fal_server={{ dg_db_unique_name_source }}
 *.fal_client={{ dg_db_unique_name_target }}

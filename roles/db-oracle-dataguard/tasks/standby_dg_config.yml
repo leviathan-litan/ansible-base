@@ -1,0 +1,47 @@
+- name: "[Data Guard] 备库配置 / 密码文件"
+  copy:
+    owner: oracle
+    group: oinstall
+    mode: 0644
+    backup: yes
+    remote_src: yes
+    src: "{{ dg_source__passwordfile }}"
+    dest: "{{ dir__oracle_home }}/dbs/orapw{{ oracle_sid }}"
+
+- name: "[Data Guard] 备库配置 / RMAN / 脚本文件"
+  copy:
+    owner: oracle
+    group: oinstall
+    mode: 0755
+    backup: yes
+    src: "rman_standby.rman"
+    dest: "{{ dir__oracle_upload_sql_file }}/rman_standby.rman"
+
+- name: "[Data Guard] 备库配置 / RMAN / 执行"
+  shell: |
+    rman target sys/{{ oracle_sys_password }}@{{ dg_db_unique_name_source }} auxiliary sys/{{ oracle_sys_password }}@{{ dg_db_unique_name_target }}
+  become: yes
+  become_user: oracle
+
+- name: "[Data Guard] 备库配置 / Standby Logfile / SQL"
+  template:
+    owner: oracle
+    group: oinstall
+    mode: 0755
+    src: "dg_standby_logfile.sql.j2"
+    dest: "{{ dir__oracle_upload_sql_file }}/dg_standby_logfile.sql"
+
+- name: "[Data Guard] 备库配置 / Standby Logfile / SQL / Shell"
+  template:
+    owner: oracle
+    group: oinstall
+    mode: 0755
+    src: "run_dg_standby_logfile.sh.j2"
+    dest: "{{ dir__oracle_upload_sql_file }}/run_dg_standby_logfile.sh"
+
+- name: "[Data Guard] 备库配置 / Standby Logfile / SQL / Execute"
+  shell: |
+    {{ dir__oracle_upload_sql_file }}/run_dg_standby_logfile.sh
+  become: yes
+  become_user: root
+  become_method: sudo

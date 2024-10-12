@@ -1,3 +1,6 @@
+
+# Oracle Database / Data Guard / Standby
+
 {{ dg_db_unique_name_target }} =
   (DESCRIPTION =
     (ADDRESS_LIST =
@@ -7,11 +10,13 @@
       (SERVICE_NAME = {{ oracle_sid }})
     )
   )
-  
+
+# Oracle Database / Data Guard / Primary
+
 {{ dg_db_unique_name_source }} =
   (DESCRIPTION =
     (ADDRESS_LIST =
-      (ADDRESS = (PROTOCOL = TCP)(HOST = {{ dg_datafile_source }})(PORT = 1521))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = {{ dg_ipaddr_source }})(PORT = 1521))
     )
     (CONNECT_DATA =
       (SERVICE_NAME = {{ oracle_sid }})

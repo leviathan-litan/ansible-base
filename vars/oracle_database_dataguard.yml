@@ -74,12 +74,18 @@ db_oracle_software__enabled_patch_install: no
 db_oracle_software__enabled_instance_create: no
 db_oracle_software__enabled_instance_post_install_sql: no
 
+# Oracle Data Guard / Config and Deployment
+db_oracle_dataguard__step_1__enabled_standby_instance_nomount: no
+db_oracle_dataguard__step_2__enabled_primary_dg_config: yes
+db_oracle_dataguard__step_3__enabled_standby_dg_config: yes
+
 # %%%%%%%%%%%%%%%%%%%%
 # Oracle Database 19c RAC / 变量
 # %%%%%%%%%%%%%%%%%%%%
 
 # 操作系统「root」口令
 linux_root_password: "oracle"
+linux_oracle_password: "oracle"
 
 # ===================== Database / 数据库
 
@@ -96,12 +102,14 @@ nationalCharacterSet: "AL16UTF16"
 # 空间与大小
 # --- 如果要写到参数文件（init.ora）中，则需要将「MB」的单位转换为「Byte」的单位
 db_recovery_file_dest_size: "4000MB"
+standby_logfile_size: "104857600"
 
 # ===================== Data Guard
 
 # Oracle Database / Data Guard
 
 # --- Source
+dg_db_oracle_home_source: "/u01/app/19/grid_home"
 dg_db_unique_name_source: "orcl"
 dg_ipaddr_source: "192.168.2.90"
 dg_datafile_source: "+DATA"
@@ -110,8 +118,8 @@ dg_logfile_source: "+REDO"
 # --- Target
 dg_db_unique_name_target: "orcldg"
 dg_ipaddr_target: "192.168.2.41"
-dg_datafile_target: "{{ dir__oracle_base }}/oradata/{{ dg_db_unique_name_target }}/datafile"
-dg_logfile_target: "{{ dir__oracle_base }}/oradata/{{ dg_db_unique_name_target }}/onlinelog"
+dg_datafile_target: "{{ dir__oracle_base }}/oradata"
+dg_logfile_target: "{{ dir__oracle_base }}/oradata"
 
 # ===================== Files / 文件
 
@@ -222,7 +230,7 @@ os_user_and_group__group:
 
 os_user_and_group__user:
   - username: "oracle"
-    password: "oracle"
+    password: "{{ linux_oracle_password }}"
     comment: "Oracle Database User"
     id: 4005
     shell: "/bin/bash"
@@ -504,3 +512,7 @@ os_fdisk__mount_point_mode: "0777"
 # ===================== [python.yml]
 
 python_command: "python"
+
+# ===================== [dg-source.yml]
+
+dg_source__passwordfile: "/tmp/oracle_passwordfile"
