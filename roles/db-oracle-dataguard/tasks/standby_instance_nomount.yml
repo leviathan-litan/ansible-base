@@ -48,6 +48,7 @@
     - "{{ dg_datafile_target }}"
     - "{{ dg_logfile_target }}"
     - "{{ dir__oracle_base }}/oradata"
+    - "{{ dir__oracle_base }}/oradata/{{ oracle_sid }}/onlinelog/"
     - "{{ dir__oracle_base }}/fast_recovery_area"
 
 - name: "[Data Guard] listener.ora"

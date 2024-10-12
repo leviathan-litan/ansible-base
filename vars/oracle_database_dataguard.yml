@@ -75,7 +75,7 @@ db_oracle_software__enabled_instance_create: no
 db_oracle_software__enabled_instance_post_install_sql: no
 
 # Oracle Data Guard / Config and Deployment
-db_oracle_dataguard__step_1__enabled_standby_instance_nomount: no
+db_oracle_dataguard__step_1__enabled_standby_instance_nomount: yes
 db_oracle_dataguard__step_2__enabled_primary_dg_config: yes
 db_oracle_dataguard__step_3__enabled_standby_dg_config: yes
 
