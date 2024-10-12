@@ -18,7 +18,7 @@
     src: "sql_files/post_install__sql_execute.sh.j2"
     dest: "{{ dir__oracle_upload_sql_file }}/post_install__sql_execute.sh"
 
-- name: "dba"
+- name: "[oracle_db_instance.yml] dbca / post-install / execute"
   shell: |
     {{ dir__oracle_upload_sql_file }}/post_install__sql_execute.sh
   become: yes

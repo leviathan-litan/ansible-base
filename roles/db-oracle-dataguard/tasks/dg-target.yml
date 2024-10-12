@@ -15,14 +15,19 @@
     msg: "{{ linux_command_kernel_param__memlock.stdout }}"
 
 - name: "[Data Guard] set variable: sga_target"
-  shell: "echo \"{{ linux_command_kernel_param__shmmax.stdout }} *0.8\" | bc"
+  shell: "echo \"{{ linux_command_kernel_param__shmmax.stdout }} *0.8\" | bc | cut -d'.' -f1"
   register: db_param_sga_target
 
-- name: "[Data Guard] set variable: sga_target"
-  shell: "echo \"{{ linux_command_kernel_param__shmmax.stdout }} *0.2\" | bc"
+- name: "[Data Guard] set variable: pga_aggregate_target"
+  shell: "echo \"{{ linux_command_kernel_param__shmmax.stdout }} *0.2\" | bc | cut -d'.' -f1"
   register: db_param_pga_aggregate_target
 
-- name: "[Data Guard] set variable: sga_target"
+- name: "[Data Guard] set variable: db_recovery_file_dest_size"
+  shell: "echo \"{{ db_recovery_file_dest_size | regex_replace('\\D', '') }} *1024 *1024\" | bc"
+  register: db_param_db_recovery_file_dest_size
+
+
+- name: "[Data Guard] Parameter files (init.ora)"
   template:
     backup: yes
     owner: root
@@ -44,3 +49,51 @@
     - "{{ dg_logfile_target }}"
     - "{{ dir__oracle_base }}/oradata/{{ dg_db_unique_name_target }}/controlfile"
     - "{{ dir__oracle_base }}/fast_recovery_area"
+
+- name: "[Data Guard] listener.ora"
+  template:
+    backup: yes
+    owner: root
+    group: root
+    mode: 0755
+    src: "listener.ora.j2"
+    dest: "{{ dir__oracle_home }}/network/admin/listener.ora"
+
+- name: "[Data Guard] tnsnames.ora"
+  template:
+    backup: yes
+    owner: root
+    group: root
+    mode: 0755
+    src: "tnsnames.ora.j2"
+    dest: "{{ dir__oracle_home }}/network/admin/tnsnames.ora"
+
+- name: "[Data Guard] Instance / startup nomount / upload sql"
+  copy:
+    owner: oracle
+    group: oinstall
+    mode: 0755
+    src: "startup_nomount.sql"
+    dest: "{{ dir__oracle_upload_sql_file }}/startup_nomount.sql"
+
+- name: "[Data Guard] Instance / startup nomount / upload shell"
+  template:
+    owner: oracle
+    group: oinstall
+    mode: 0755
+    src: "run_DB_startup_nomount.sh.j2"
+    dest: "{{ dir__oracle_upload_sql_file }}/run_DB_startup_nomount.sh"
+
+- name: "[Data Guard] Instance / startup nomount / execute"
+  shell: |
+    {{ dir__oracle_upload_sql_file }}/run_DB_startup_nomount.sh
+  become: yes
+  become_user: root
+  become_method: sudo
+
+- name: "[Data Guard] Instance / listener / startup"
+  shell: |
+    lsnrctl start
+  become: yes
+  become_user: oracle
+  become_method: sudo

@@ -1,0 +1,19 @@
+{{ dg_db_unique_name_target }} =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = {{ dg_ipaddr_target }})(PORT = 1521))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = {{ oracle_sid }})
+    )
+  )
+  
+{{ dg_db_unique_name_source }} =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = {{ dg_datafile_source }})(PORT = 1521))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = {{ oracle_sid }})
+    )
+  )

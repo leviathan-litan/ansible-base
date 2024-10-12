@@ -91,6 +91,7 @@ characterSet: "AL32UTF8"
 nationalCharacterSet: "AL16UTF16"
 
 # 空间与大小
+# --- 如果要写到参数文件（init.ora）中，则需要将「MB」的单位转换为「Byte」的单位
 db_recovery_file_dest_size: "4000MB"
 
 # ===================== Data Guard
