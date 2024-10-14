@@ -1,0 +1,1 @@
+su - oracle -c 'sqlplus -s / as sysdba @{{ dir__oracle_upload_sql_file }}/logfile_bytes_primary.sql | grep -A2 "BYTES" | tail -n 1'

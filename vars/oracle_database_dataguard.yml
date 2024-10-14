@@ -79,6 +79,10 @@ db_oracle_dataguard__step_1__enabled_standby_instance_nomount: yes
 db_oracle_dataguard__step_2__enabled_primary_dg_config: yes
 db_oracle_dataguard__step_3__enabled_standby_dg_config: yes
 
+# 备库的 STANDBY LOGFILE 大小是否与主库保持一致
+# 如果保持一致，需要注释 参数[standby_logfile_size]
+standby_logfile_size_automatic_sync_with_primary: yes
+
 # %%%%%%%%%%%%%%%%%%%%
 # Oracle Database 19c RAC / 变量
 # %%%%%%%%%%%%%%%%%%%%
@@ -105,7 +109,7 @@ db_recovery_file_dest_size: "4000MB"
 
 # --- 要跟主库的REDO的大小一样(这个应该是变量)
 # --- select bytes from v$log;
-standby_logfile_size: "104857600"
+# standby_logfile_size: "104857600"
 
 # ===================== Data Guard
 

@@ -1,3 +1,15 @@
+{% if standby_logfile_size_automatic_sync_with_primary %}
+alter database add standby logfile group 31 '{{ dg_logfile_target }}/standby31.log' size {{ standby_logfile_size.stdout }};
+alter database add standby logfile group 32 '{{ dg_logfile_target }}/standby32.log' size {{ standby_logfile_size.stdout }};
+alter database add standby logfile group 33 '{{ dg_logfile_target }}/standby33.log' size {{ standby_logfile_size.stdout }};
+alter database add standby logfile group 34 '{{ dg_logfile_target }}/standby34.log' size {{ standby_logfile_size.stdout }};
+alter database add standby logfile group 35 '{{ dg_logfile_target }}/standby35.log' size {{ standby_logfile_size.stdout }};
+alter database add standby logfile group 36 '{{ dg_logfile_target }}/standby36.log' size {{ standby_logfile_size.stdout }};
+alter database add standby logfile group 37 '{{ dg_logfile_target }}/standby37.log' size {{ standby_logfile_size.stdout }};
+alter database add standby logfile group 38 '{{ dg_logfile_target }}/standby38.log' size {{ standby_logfile_size.stdout }};
+alter database add standby logfile group 39 '{{ dg_logfile_target }}/standby39.log' size {{ standby_logfile_size.stdout }};
+alter database add standby logfile group 40 '{{ dg_logfile_target }}/standby40.log' size {{ standby_logfile_size.stdout }};
+{% else %}
 alter database add standby logfile group 31 '{{ dg_logfile_target }}/standby31.log' size {{ standby_logfile_size }};
 alter database add standby logfile group 32 '{{ dg_logfile_target }}/standby32.log' size {{ standby_logfile_size }};
 alter database add standby logfile group 33 '{{ dg_logfile_target }}/standby33.log' size {{ standby_logfile_size }};
@@ -8,6 +20,7 @@ alter database add standby logfile group 37 '{{ dg_logfile_target }}/standby37.l
 alter database add standby logfile group 38 '{{ dg_logfile_target }}/standby38.log' size {{ standby_logfile_size }};
 alter database add standby logfile group 39 '{{ dg_logfile_target }}/standby39.log' size {{ standby_logfile_size }};
 alter database add standby logfile group 40 '{{ dg_logfile_target }}/standby40.log' size {{ standby_logfile_size }};
+{% endif %}
 
 alter database recover managed standby database using current logfile disconnect from session;
 exec dbms_lock.sleep(300);

@@ -24,6 +24,32 @@
   become_user: root
   become_method: sudo
 
+- name: "上传查询主库段日志文件大小的SQL"
+  copy:
+    owner: oracle
+    group: oinstall
+    mode: 0755
+    src: "logfile_bytes_primary.sql"
+    dest: "{{ dir__oracle_upload_sql_file }}/logfile_bytes_primary.sql"
+
+- name: "上传查询主库段日志文件大小的SHELL"
+  template:
+    owner: oracle
+    group: oinstall
+    mode: 0755
+    src: "run_logfile_bytes_primary.sh.j2"
+    dest: "{{ dir__oracle_upload_sql_file }}/run_logfile_bytes_primary.sh"
+
+- name: "[Data Guard] 从主库获取 日志文件的大小 并将备库的 STANDBY LOGFILE 设为一样的大小"
+  shell: |
+    {{ dir__oracle_upload_sql_file }}/run_logfile_bytes_primary.sh
+  register: standby_logfile_size
+  become: yes
+  become_user: root
+  become_method: sudo
+  when:
+    - standby_logfile_size_automatic_sync_with_primary
+
 - name: "[Data Guard] 备库配置 / Standby Logfile / SQL"
   template:
     owner: oracle
