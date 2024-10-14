@@ -35,3 +35,10 @@ node3  ansible_host=192.168.2.41 node_id=2
 [db-oracle-dataguard]
 master ansible_host=192.168.2.90 node_id=1
 node3  ansible_host=192.168.2.41 node_id=2
+
+# ####################
+# Microsoft SQL Server 2016 / High Available / AlwaysOn
+# ####################
+[db-ms-sqlserver]
+node1 ansible_host=192.168.2.51 node_id=1
+node2 ansible_host=192.168.2.52 node_id=2

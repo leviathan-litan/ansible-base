@@ -41,7 +41,8 @@ Ansible 受控端：
 1. 安装好操作系统
 2. 配置好网卡（IP / NETMAST / GATEWAY / DNS）
 3. 关闭防火墙
-4. 运行「ms_windows__prepare_for_ansible.bat」
+4. 安装Python3
+5. 运行「ms_windows__prepare_for_ansible.py」
 
 Ansible 服务器：
 1. PIP依赖包「pywinrm」
