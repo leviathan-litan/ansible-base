@@ -54,6 +54,10 @@ print_comment("[winrm] config service")
 execute_os_command('winrm set winrm/config/service @{AllowUnencrypted="true"}')
 execute_os_command('winrm set winrm/config/service/auth @{Basic="true"}')
 
+print_comment("[PowerShell] config execution policy")
+execute_os_command('powershell -Command "Set-Executionpolicy remotesigned"')
+execute_os_command('powershell -Command "Get-Executionpolicy"')
+
 print_comment("[microsoft windows] hostname")
 execute_os_command('wmic computersystem where name="%computername%" call rename name="node1"')
 
